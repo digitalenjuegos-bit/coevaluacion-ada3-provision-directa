@@ -789,8 +789,9 @@
         }
 
         function calcNotaFinal(nADA, coev) {
-            if (nADA === null || coev === null) return null;
-            return nADA * pesoDocente + coev * pesoCoeval;
+            if (nADA === null) return null;
+            if (coev === null && pesoCoeval > 0) return null;
+            return nADA * pesoDocente + (coev === null ? 0 : coev) * pesoCoeval;
         }
 
         function orderedRoster() {
