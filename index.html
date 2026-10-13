@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economia IB Nivel Medio - ADA 3: Provision directa de servicios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-database-compat.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(160deg, #eef2ff 0%, #f8fafc 45%, #ecfeff 100%); min-height: 100vh; }
+        .glass-panel { background-color: rgba(255,255,255,0.96); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .tab-content { display: none; } .tab-content.active { display: block; }
+        .score-green { background-color: #dcfce7; color: #166534; font-weight: bold; }
+        .score-blue { background-color: #dbeafe; color: #1e40af; font-weight: bold; }
+        .score-red { background-color: #fee2e2; color: #991b1b; font-weight: bold; }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; z-index: 9999; pointer-events: none; max-width: 360px; }
+        .missing-score { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
+        .lvl-btn { transition: all 0.15s ease; }
+        .lvl-btn.selected { background-color: #1d4ed8 !important; color: white !important; border-color: #1d4ed8 !important; font-weight: bold; }
+        .lv-green { border-color: #86efac; background-color: #f0fdf4; }
+        .lv-blue { border-color: #93c5fd; background-color: #eff6ff; }
+        .lv-red { border-color: #fca5a5; background-color: #fef2f2; }
+    </style>
+</head>
+<body class="text-gray-800">
+    <div class="max-w-7xl mx-auto p-4 glass-panel shadow-2xl rounded-lg mt-6 mb-6 border border-gray-200">
+        <header class="border-b-2 border-blue-800 pb-4 mb-4 flex justify-between items-center flex-wrap gap-4 bg-blue-50/50 p-4 rounded-t-lg">
+            <div>
+                <h1 class="text-3xl font-bold text-blue-900">Economia IB Nivel Medio &middot; 2BGU</h1>
+                <p class="text-lg text-gray-700 font-semibold">ADA 3: Provision directa de servicios</p>
+            </div>
+            <div id="statsBar" class="hidden text-right text-sm bg-white p-2 rounded-lg border border-blue-200 shadow-sm">
+                <span class="font-bold text-blue-800" id="statEvals">0 coevaluaciones</span><br>
+                <span class="text-xs text-gray-500">Prom: <b id="statProm">N/A</b> | Max: <b id="statMax">N/A</b> | Min: <b id="statMin">N/A</b></span>
+            </div>
+        </header>
+
+        <div class="flex border-b mb-4 flex-wrap gap-1">
+            <button onclick="showTab(1)" class="px-4 py-2 bg-blue-600 text-white rounded-t-md tab-btn active" id="tab1-btn">Introduccion</button>
+            <button onclick="showTab(2)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-t-md ml-2 tab-btn" id="tab2-btn">Coevaluacion</button>
+            <button onclick="showTab(3)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-t-md ml-2 tab-btn" id="tab3-btn">Mi nota</button>
+        </div>
+
+        <!-- PESTANA 1: INTRODUCCION -->
+        <div id="tab1" class="tab-content active">
+            <div class="prose max-w-none">
+                <h2 class="text-2xl font-semibold text-blue-800">PROVISION DIRECTA DE SERVICIOS</h2>
+                <p class="italic text-gray-600">Que gana y que pierde cada parte interesada cuando el Estado produce directamente un bien de merito o un bien publico?</p>
+                <p>En esta ADA estudiaste las formas de intervencion del gobierno en los mercados. La <b>provision directa</b> es la intervencion en la que el Estado produce o entrega el bien o servicio, en lugar de dejar que lo haga el sector privado. Trabajaron en cuatro casos: la salud publica y la educacion publica como bienes de merito, los bienes publicos puros y el problema del polizon, y los servicios publicos que no son gratuitos para el usuario.</p>
+                <p>Ahora, como cierre, cada equipo presenta su <b>infografia y exposicion</b> y tu participas como <b>coevaluador</b>: valoraras el trabajo de los demas equipos con la rubrica de esta actividad, dentro de un marco de respeto, objetividad, equilibrio, escucha activa y etica. La coevaluacion no es critica destructiva: es una oportunidad para brindar retroalimentacion constructiva a tus companeros.</p>
+
+                <div class="bg-blue-50 p-4 rounded-md border border-blue-200 mt-4">
+                    <h3 class="text-xl font-semibold text-blue-800">Rubrica de Coevaluacion (sobre 10 puntos)</h3>
+                    <p class="font-mono bg-white p-2 rounded mt-2 text-center text-lg">Nota /10 = (aporte + preparacion + claridad + respeto) x 10 / 12, redondeada</p>
+                    <ul class="list-disc pl-5 mt-2 text-sm">
+                        <li><b>Aporte al grupo (3 pts):</b> contribuyo con ideas, trabajo y responsabilidad al producto del equipo.</li>
+                        <li><b>Preparacion (3 pts):</b> domino el tema y llego listo para la exposicion.</li>
+                        <li><b>Claridad de la exposicion (3 pts):</b> explico con palabras propias, con orden y precision.</li>
+                        <li><b>Respeto y colaboracion (3 pts):</b> escucho, respeto y ayudo a sus companeros durante todo el trabajo.</li>
+                        <li><b>Regla:</b> al seleccionar el equipo, calificas a <b>cada integrante de forma individual</b> (una nota por companero). No puedes evaluar a tu propio equipo.</li>
+                        <li><b>Colores de Nota Final:</b>
+                            <span class="bg-green-100 text-green-800 px-2 rounded ml-1">Verde (7 o mas)</span>,
+                            <span class="bg-blue-100 text-blue-800 px-2 rounded ml-1">Azul (6)</span>,
+                            <span class="bg-red-100 text-red-800 px-2 rounded ml-1">Rojo (menos de 6)</span>.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <button onclick="toggleTeacherAccess()" class="text-sm text-gray-500 hover:text-blue-600">Acceso Docente / Configuracion</button>
+                <div id="teacher-login" class="hidden mt-2 p-4 bg-gray-50 rounded-md border inline-block">
+                    <label class="block text-sm font-medium text-gray-700">Contrasena:</label>
+                    <input type="password" id="passwordInput" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" onkeydown="if(event.key==='Enter'){authenticateTeacher();}">
+                    <button onclick="authenticateTeacher()" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">Ingresar</button>
+                </div>
+            </div>
+
+            <!-- PANEL DOCENTE -->
+            <div id="teacher-panel" class="hidden mt-8 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                <h3 class="text-xl font-bold text-blue-900 mb-4">Panel de Administracion Docente</h3>
+                <p class="text-sm text-gray-600 mb-4">Curso unico 2BGU, cuatro grupos. Nota final = <b id="pesoHeader">100% rubrica docente / 0% coevaluacion</b>.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="p-4 bg-white rounded border">
+                        <h4 class="font-semibold mb-1">1. Control de Evaluaciones (global, en la nube)</h4>
+                        <p class="text-xs text-gray-500 mb-2">Al cerrarlas, se bloquean en TODOS los dispositivos.</p>
+                        <button id="toggleEvaluationsBtn" onclick="toggleEvaluations()" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold text-sm hover:bg-green-700 shadow-sm">Evaluaciones Abiertas</button>
+                    </div>
+                    <div class="p-4 bg-white rounded border">
+                        <h4 class="font-semibold mb-1">2. Peso de la nota final</h4>
+                        <p class="text-xs text-gray-500 mb-2">Nota Final = Nota ADA x <b id="pesoDocLabel">100</b>% + Nota Coevaluacion x <b id="pesoCoevalLabel">0</b>%. Por defecto la nota final reproduce exactamente la rubrica docente.</p>
+                        <div class="flex items-center gap-3 flex-wrap">
+                            <label class="text-sm">% Docente:</label>
+                            <input id="pesoDocenteInput" type="number" min="0" max="100" value="100" class="border rounded px-2 py-1 w-20 text-sm" oninput="pesoPreview()">
+                            <span class="text-sm text-gray-500">% Coevaluacion: <b id="pesoCoevalPreview">0</b>%</span>
+                            <button onclick="guardarPesos()" class="bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-bold hover:bg-blue-800">Guardar pesos</button>
+                            <span id="pesoStatus" class="text-xs text-gray-500"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GESTION DE EQUIPOS -->
+                <div class="mb-6 p-4 bg-white rounded border">
+                    <h4 class="font-semibold mb-1">3. Gestion de Equipos (parametrizable)</h4>
+                    <p class="text-xs text-gray-500 mb-3">Si los alumnos forman nuevos grupos, editalos aqui y presiona <b>Guardar equipos en la nube</b>: se aplican al instante en los dispositivos. Las notas ya registradas no se pierden (estan ligadas al estudiante, no al grupo).</p>
+                    <div class="flex flex-wrap gap-4 items-end mb-4">
+                        <div>
+                            <label class="block text-xs font-medium">N. de Equipos (1-12)</label>
+                            <input type="number" id="numTeams" min="1" max="12" value="4" class="w-24 px-2 py-1 border rounded">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium">Max. integrantes por equipo</label>
+                            <input type="number" id="numMembers" min="1" max="8" value="4" class="w-24 px-2 py-1 border rounded">
+                        </div>
+                        <button onclick="editorGenerateTeams()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">Generar Estructura</button>
+                        <button onclick="editorRandomAssign()" class="bg-purple-600 text-white px-4 py-1.5 rounded text-sm hover:bg-purple-700">Asignacion Aleatoria</button>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <h5 class="text-sm font-bold mb-2 bg-gray-100 p-1 rounded">Estudiantes Sin Equipo (<span id="unassignedCount">0</span>)</h5>
+                            <div id="unassignedList" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-96 overflow-y-auto p-1 bg-gray-50 rounded border"></div>
+                        </div>
+                        <div>
+                            <h5 class="text-sm font-bold mb-2 bg-blue-100 p-1 rounded">Equipos del Curso</h5>
+                            <div id="teamBuilder" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-96 overflow-y-auto p-1 bg-gray-50 rounded border"></div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-3 items-center border-t pt-3">
+                        <button onclick="saveTeamsToCloud()" class="bg-green-700 text-white px-5 py-2 rounded font-bold text-sm hover:bg-green-800">Guardar equipos en la nube</button>
+                        <button onclick="resetTeamsToDefault(this)" class="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600">Restaurar equipos originales</button>
+                        <span id="teamsCloudStatus" class="text-xs text-gray-500"></span>
+                    </div>
+                </div>
+
+                <!-- MODULO 1: RUBRICA DOCENTE -->
+                <div class="mb-6 p-4 bg-white rounded border">
+                    <h4 class="font-semibold mb-1">4. Evaluacion Docente (rubrica oficial de la ADA 3)</h4>
+                    <p class="text-xs text-gray-500 mb-3">Bloque grupal: B Terminologia (max 2) y C Aplicacion y analisis (max 3), igual para los 4 integrantes. Bloque individual: D Concepto clave (max 3), E Evaluacion (max 3) y llamados de atencion por lectura. Nota ADA = (B + C + D + E) / 11 x 10 menos el descuento por lectura; nunca menor que 0.</p>
+                    <div id="docenteRubricaArea" class="text-sm"></div>
+                </div>
+
+                <!-- RESUMEN POR ESTUDIANTE -->
+                <div class="mb-6 p-4 bg-white rounded border">
+                    <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
+                        <h4 class="font-semibold">5. Resumen por estudiante (en vivo)</h4>
+                        <div class="flex gap-2">
+                            <button onclick="exportToXlsx()" class="bg-emerald-700 text-white px-3 py-1 rounded text-sm font-bold hover:bg-emerald-800">Descargar Excel (.xlsx)</button>
+                            <button onclick="exportToCSV()" class="bg-green-700 text-white px-3 py-1 rounded text-sm font-bold hover:bg-green-800">Descargar CSV</button>
+                        </div>
+                    </div>
+                    <div id="participationCounter" class="inline-block text-sm font-semibold text-blue-800 bg-blue-50 border border-blue-200 rounded px-3 py-1 mb-2">Participacion: cargando...</div>
+                    <p class="text-xs text-gray-500 mb-3">Cada fila es un estudiante. <b>Nota Final</b> = Nota ADA x <span id="pesoDocRep">100</span>% + Nota Coevaluacion x <span id="pesoCoeRep">0</span>%. Mientras falte una de las dos partes, la nota final queda como pendiente de esa parte.</p>
+                    <div class="overflow-x-auto mb-4">
+                        <table class="w-full text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-blue-100 text-blue-800">
+                                    <th class="border p-2 text-left">Estudiante</th>
+                                    <th class="border p-2 text-center">Grupo</th>
+                                    <th class="border p-2 text-center">B</th>
+                                    <th class="border p-2 text-center">C</th>
+                                    <th class="border p-2 text-center">D</th>
+                                    <th class="border p-2 text-center">E</th>
+                                    <th class="border p-2 text-center">Llamados</th>
+                                    <th class="border p-2 text-center">Descuento</th>
+                                    <th class="border p-2 text-center">Nota ADA</th>
+                                    <th class="border p-2 text-center">Nota Coeval</th>
+                                    <th class="border p-2 text-center">Nota Final</th>
+                                    <th class="border p-2 text-left" style="min-width:280px">Retroalimentacion</th>
+                                </tr>
+                            </thead>
+                            <tbody id="liveGradesBody">
+                                <tr><td colspan="12" class="border p-2 text-center text-gray-400">Conectando a la nube...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h5 class="text-xs font-bold text-gray-600 mt-4 mb-1">Historial detallado de coevaluaciones (para eliminar registros):</h5>
+                    <div id="evalLogList" class="space-y-2 max-h-64 overflow-y-auto p-1 border rounded bg-gray-50">
+                        <p class="text-gray-400 text-sm p-2 text-center">No hay registros.</p>
+                    </div>
+                    <div class="border-t pt-4 mt-4 flex gap-4 items-center flex-wrap">
+                        <button onclick="clearCloudData(this)" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 font-medium text-sm">Borrar TODAS las coevaluaciones (nube)</button>
+                        <span class="text-xs text-gray-500">Accion con doble clic de confirmacion. No borra las notas del docente.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTANA 2: VISTA DEL ALUMNO (COEVALUACION) -->
+        <div id="tab2" class="tab-content">
+            <h2 class="text-2xl font-semibold text-blue-800 mb-4">Coevaluacion de la infografia y la exposicion</h2>
+            <p class="text-sm text-gray-600 mb-4">Evalua a los integrantes de los otros grupos. No puedes evaluar a tu propio equipo. Si vuelves a evaluar a un companero, tu nota anterior se reemplaza.</p>
+
+            <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                <label class="block text-sm font-bold text-gray-700">Paso 1: Selecciona tu nombre (Evaluador)</label>
+                <select id="evaluator" onchange="handleEvaluatorChange()" class="mt-1 block w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white">
+                    <option value="">Seleccione su nombre...</option>
+                </select>
+            </div>
+
+            <div id="groupSelectionBox" class="hidden mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                <label class="block text-sm font-bold text-gray-700">Paso 2: Selecciona el grupo a evaluar</label>
+                <select id="groupToEvaluate" onchange="loadSelectedGroup()" class="mt-1 block w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white">
+                    <option value="">Seleccione un grupo...</option>
+                </select>
+            </div>
+
+            <div id="evaluationArea" class="space-y-6"></div>
+
+            <div id="backToEvalBox" class="hidden mt-6 text-center">
+                <button onclick="goBackToGroupSelection()" class="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-blue-700 shadow-md">Volver a evaluar otro grupo</button>
+            </div>
+        </div>
+
+        <!-- PESTANA 3: MI NOTA -->
+        <div id="tab3" class="tab-content">
+            <h2 class="text-2xl font-semibold text-blue-800 mb-4">Consulta de mi nota</h2>
+            <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                <label class="block text-sm font-bold text-gray-700">Selecciona tu nombre</label>
+                <select id="consultaEvaluador" onchange="renderConsulta()" class="mt-1 block w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white">
+                    <option value="">Seleccione su nombre...</option>
+                </select>
+            </div>
+            <div id="consultaArea" class="mt-4">
+                <p class="text-gray-500 text-sm">Selecciona tu nombre para consultar tu nota de la ADA 3, tu promedio de coevaluacion y tu nota final.</p>
+            </div>
+        </div>
+
+        <footer class="mt-10 pt-6 border-t border-gray-200 text-center text-xs text-gray-500">
+            <p>2026 Mr. Alberto Ottati R. Todos los derechos reservados. Cualquier manipulacion o uso indebido de esta rubrica sera debidamente penalizada.</p>
+        </footer>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script>
+        "use strict";
+
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-iRwZ9AUya0F7tkU4uQUWE7eJbgeFZwM",
+            authDomain: "coevaluacionhistoria.firebaseapp.com",
+            databaseURL: "https://coevaluacionhistoria-default-rtdb.firebaseio.com",
+            projectId: "coevaluacionhistoria",
+            storageBucket: "coevaluacionhistoria.firebasestorage.app",
+            messagingSenderId: "878859292504",
+            appId: "1:878859292504:web:94a313961d347d1d5cdf2d"
+        };
+        const ACT = 'provision_directa_ada3';
+        const DB_NODE = 'evaluations_' + ACT;
+        const DOCENTE_NODE = 'docente_' + ACT;
+        const CONFIG_NODE = 'config_pesos_' + ACT;
+        const LOCK_NODE = 'config_' + ACT + '/evaluationsActive';
+        const TEAMS_NODE = 'teams_' + ACT;
+
+        let db = null;
+        try {
+            if (typeof firebase !== 'undefined') {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.database();
+            } else { console.error("Firebase SDK no cargo."); }
+        } catch (e) { console.error("Error inicializando Firebase:", e); }
+
+
+        // --- RUBRICA DE COEVALUACION (4 criterios x /3 = total /12, se normaliza a /10) ---
+        const coevalRubric = [
+            { key: 'c1', title: 'Aporte al grupo', levels: [
+                { pts: 3, label: 'Excelente', text: 'Aporto ideas y trabajo de forma constante y asumio su parte con responsabilidad.' },
+                { pts: 2, label: 'Bueno', text: 'Aporto lo necesario, aunque pudo comprometerse mas con el producto final.' },
+                { pts: 1, label: 'Limitado', text: 'Aporto poco al trabajo del equipo.' },
+                { pts: 0, label: 'No evidencia', text: 'No se evidencia aporte al trabajo del equipo.' }
+            ]},
+            { key: 'c2', title: 'Preparacion', levels: [
+                { pts: 3, label: 'Excelente', text: 'Domino el tema y llego preparado con todo lo necesario.' },
+                { pts: 2, label: 'Bueno', text: 'Conocia el tema, aunque con algunas lagunas en su parte.' },
+                { pts: 1, label: 'Limitado', text: 'Llego con poca preparacion del tema asignado.' },
+                { pts: 0, label: 'No evidencia', text: 'No se evidencia preparacion del tema.' }
+            ]},
+            { key: 'c3', title: 'Claridad de la exposicion', levels: [
+                { pts: 3, label: 'Excelente', text: 'Explico con palabras propias, con orden y precision.' },
+                { pts: 2, label: 'Bueno', text: 'Explico de forma comprensible, con algunos titubeos.' },
+                { pts: 1, label: 'Limitado', text: 'Su explicacion fue confusa o leyo casi todo.' },
+                { pts: 0, label: 'No evidencia', text: 'No se comprende su explicacion.' }
+            ]},
+            { key: 'c4', title: 'Respeto y colaboracion', levels: [
+                { pts: 3, label: 'Excelente', text: 'Escucho, respeto y ayudo a sus companeros durante todo el trabajo.' },
+                { pts: 2, label: 'Bueno', text: 'Mantuvo una actitud respetuosa y colaborativa.' },
+                { pts: 1, label: 'Limitado', text: 'Mostro poca colaboracion o disposicion con el equipo.' },
+                { pts: 0, label: 'No evidencia', text: 'No respeto ni colaboro con el equipo.' }
+            ]}
+        ];
+
+        // --- RUBRICA OFICIAL DEL DOCENTE (ADA 3: provision directa) ---
+        // Bloque GRUPAL: B Terminologia (max 2), C Aplicacion y analisis (max 3).
+        const RUB_B = { id: 'B', max: 2, name: 'B. Terminologia', levels: [
+            { v: 2, color: 'green', text: 'Usa apropiadamente la terminologia de la intervencion (provision directa, reglamentacion de mando y control, bien de merito, bien publico, polizon, bien de demerito, fallo de gobierno, partes interesadas) en todos los bloques.' },
+            { v: 1, color: 'blue', text: 'Terminos pertinentes con imprecisiones, aislados o en un solo bloque.' },
+            { v: 0, color: 'red', text: 'No alcanza el 1.' }
+        ]};
+        const RUB_C = { id: 'C', max: 3, name: 'C. Aplicacion y analisis', levels: [
+            { v: 3, color: 'green', text: 'Aplica con eficacia la teoria de la intervencion al ejemplo: explica la falla de mercado, como cambian el precio que paga el usuario, la cantidad consumida o producida y el papel del sector privado; y analiza con datos verificables que gana y pierde cada parte interesada.' },
+            { v: 2, color: 'blue', text: 'Analisis adecuado pero omite una parte interesada, un efecto sobre el mercado o el respaldo con datos.' },
+            { v: 1, color: 'red', text: 'Describe la medida y efectos generales; analisis limitado.' },
+            { v: 0, color: 'red', text: 'No alcanza el 1.' }
+        ]};
+        // Bloque INDIVIDUAL: D Concepto clave (max 3), E Evaluacion (max 3).
+        const RUB_D = { id: 'D', max: 3, name: 'D. Concepto clave', nota: 'Conceptos admitidos: intervencion, equidad, bienestar economico, eficiencia o sostenibilidad.', levels: [
+            { v: 3, color: 'green', text: 'Identifica un concepto y explica con sus palabras, de forma completa, como da sentido al caso (de la razon de la medida a su juicio final).' },
+            { v: 2, color: 'blue', text: 'Lo identifica y explica parcialmente su relacion.' },
+            { v: 1, color: 'red', text: 'Lo identifica e intenta vincularlo sin explicar la relacion.' },
+            { v: 0, color: 'red', text: 'No identifica o no alcanza el 1.' }
+        ]};
+        const RUB_E = { id: 'E', max: 3, name: 'E. Evaluacion', levels: [
+            { v: 3, color: 'green', text: 'Formula juicio final fundamentado sobre mantener, ajustar o reemplazar: sopesa costos y beneficios para distintas partes interesadas, distingue corto y largo plazo y responde a la perspectiva contraria u otra forma de intervencion.' },
+            { v: 2, color: 'blue', text: 'Juicio con razonamiento adecuado pero una sola perspectiva o sin distinguir corto y largo plazo.' },
+            { v: 1, color: 'red', text: 'Opinion con razonamiento limitado o sin evidencia.' },
+            { v: 0, color: 'red', text: 'No alcanza el 1.' }
+        ]};
+        const NOTA_MAX = 11; // B(2) + C(3) + D(3) + E(3)
+
+        // --- GRUPOS (hardcoded; un solo curso 2BGU) ---
+        const GROUPS = [
+            { id: 'G1', topic: 'Bienes de merito: la salud publica', members: ['Alejandro Granda', 'Vicente Chalen', 'Martin Murillo', 'Emmanuel Molano'] },
+            { id: 'G2', topic: 'Bienes de merito: la educacion publica', members: ['Juan Martin Romero', 'Ivanna Guerrero', 'Camila Aspiazu', 'Sebastian Ortiz'] },
+            { id: 'G3', topic: 'Bienes publicos puros y el problema del polizon', members: ['JuanJose Campuzano', 'Gianella Alban', 'Mateo De La Cruz', 'Domenica Tamayo'] },
+            { id: 'G4', topic: 'Servicios publicos que no son gratuitos', members: ['Jacinto Flor', 'Adrian Mendiburo', 'Valeria Vizhnay', 'Mathias Martinez'] }
+        ];
+        const ROSTER = GROUPS.reduce((acc, g) => acc.concat(g.members), []);
+        const DEFAULT_TEAMS = JSON.parse(JSON.stringify(GROUPS));
+
+        let teams = JSON.parse(JSON.stringify(GROUPS));
+        let evaluationsActive = true;
+        let allLogs = [];          // [{ grupoId, logId, ...eval }]
+        let docenteScores = {};    // { studentKey: {grupoId,B,C,D,E,llamados,descuento,notaADA,timestamp} }
+        let pesoDocente = 1.0, pesoCoeval = 0.0;
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            if (!t) return;
+            t.textContent = msg; t.style.opacity = 1;
+            setTimeout(() => { t.style.opacity = 0; }, 3200);
+        }
+        function safeKey(str) { return str ? str.replace(/[.#$/\[\]]/g, '').replace(/[^a-zA-Z0-9]/g, '_') : ''; }
+        function shortName(n) { return n ? n.trim() : ''; }
+        function teamNum(teamId) { const m = String(teamId || '').match(/\d+/); return m ? m[0] : teamId; }
+        function groupLabel(id) { return 'Grupo ' + teamNum(id); }
+        function avg(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null; }
+        function findGroupOf(student) { return teams.find(t => t.members.includes(student)) || null; }
+        function smap(arr) { return arr.map(shortName).join(', '); }
+
+
+        // --- ONLOAD: listeners de Firebase ---
+        window.onload = function() {
+            renderEvaluators();
+            renderConsultaEvaluadores();
+            renderTeamEditor();
+            if (db) {
+                db.ref(LOCK_NODE).on('value', snap => {
+                    const v = snap.val();
+                    evaluationsActive = (v === null) ? true : !!v;
+                    updateToggleBtn();
+                    handleEvaluatorChange();
+                });
+                db.ref(DB_NODE).on('value', snap => {
+                    const data = snap.val() || {};
+                    allLogs = [];
+                    Object.keys(data).forEach(gid => {
+                        const g = data[gid] || {};
+                        Object.keys(g).forEach(k => { allLogs.push(Object.assign({}, g[k], { grupoId: gid, logId: k })); });
+                    });
+                    renderLiveGrades();
+                    renderEvalLogList();
+                    updateStats();
+                    renderConsulta();
+                });
+                db.ref(DOCENTE_NODE).on('value', snap => {
+                    docenteScores = snap.val() || {};
+                    renderLiveGrades();
+                    renderDocenteRubrica();
+                    renderConsulta();
+                });
+                db.ref(CONFIG_NODE).on('value', snap => {
+                    const w = snap.val();
+                    if (w && typeof w.pesoDocente === 'number' && typeof w.pesoCoeval === 'number') {
+                        pesoDocente = w.pesoDocente; pesoCoeval = w.pesoCoeval;
+                    }
+                    const dPct = Math.round(pesoDocente * 100), cPct = Math.round(pesoCoeval * 100);
+                    const pd = document.getElementById('pesoDocenteInput'); if (pd) pd.value = dPct;
+                    const pdl = document.getElementById('pesoDocLabel'); if (pdl) pdl.textContent = dPct;
+                    const pcl = document.getElementById('pesoCoevalLabel'); if (pcl) pcl.textContent = cPct;
+                    const pdr = document.getElementById('pesoDocRep'); if (pdr) pdr.textContent = dPct;
+                    const pcr = document.getElementById('pesoCoeRep'); if (pcr) pcr.textContent = cPct;
+                    const pcp = document.getElementById('pesoCoevalPreview'); if (pcp) pcp.textContent = cPct;
+                    const ph = document.getElementById('pesoHeader'); if (ph) ph.textContent = dPct + '% rubrica docente / ' + cPct + '% coevaluacion';
+                });
+                db.ref(TEAMS_NODE).on('value', snap => {
+                    const d = snap.val();
+                    if (d && Array.isArray(d.teams) && d.teams.length > 0) {
+                        teams = d.teams.map(t => { if (!Array.isArray(t.members)) t.members = []; return t; });
+                    } else {
+                        teams = JSON.parse(JSON.stringify(DEFAULT_TEAMS));
+                    }
+                    populateGroupDropdown();
+                    renderLiveGrades();
+                    const panel = document.getElementById('teacher-panel');
+                    if (panel && !panel.classList.contains('hidden')) renderTeamEditor();
+                });
+            }
+        };
+
+        // --- TABS ---
+        function showTab(i) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active', 'bg-blue-600', 'text-white');
+                el.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            document.getElementById('tab' + i).classList.add('active');
+            const btn = document.getElementById('tab' + i + '-btn');
+            btn.classList.add('active', 'bg-blue-600', 'text-white');
+            btn.classList.remove('bg-gray-200', 'text-gray-700');
+            if (i === 2) handleEvaluatorChange();
+            if (i === 3) renderConsulta();
+        }
+
+        function toggleTeacherAccess() { document.getElementById('teacher-login').classList.toggle('hidden'); }
+        function authenticateTeacher() {
+            if (document.getElementById('passwordInput').value === 'docente2026') {
+                document.getElementById('teacher-panel').classList.remove('hidden');
+                document.getElementById('statsBar').classList.remove('hidden');
+                renderLiveGrades(); renderEvalLogList(); updateStats(); renderTeamEditor(); renderDocenteRubrica();
+            } else { showToast('Contrasena incorrecta.'); }
+        }
+
+        async function toggleEvaluations() {
+            if (!db) { showToast('Sin conexion a la nube.'); return; }
+            try {
+                await db.ref(LOCK_NODE).set(!evaluationsActive);
+                showToast(!evaluationsActive ? 'Evaluaciones Activadas (todos los dispositivos)' : 'Evaluaciones Cerradas (todos los dispositivos)');
+            } catch (e) { showToast('Error: ' + e.message); }
+        }
+        function updateToggleBtn() {
+            const btn = document.getElementById('toggleEvaluationsBtn');
+            if (!btn) return;
+            if (evaluationsActive) {
+                btn.textContent = 'Evaluaciones Abiertas';
+                btn.className = 'bg-green-600 text-white px-6 py-2 rounded-lg font-bold text-sm hover:bg-green-700 shadow-sm';
+            } else {
+                btn.textContent = 'Evaluaciones Cerradas';
+                btn.className = 'bg-red-600 text-white px-6 py-2 rounded-lg font-bold text-sm hover:bg-red-700 shadow-sm';
+            }
+        }
+
+        function pesoPreview() {
+            const v = parseInt(document.getElementById('pesoDocenteInput').value, 10);
+            const co = (100 - (isNaN(v) ? 0 : v));
+            document.getElementById('pesoCoevalPreview').textContent = co;
+        }
+        async function guardarPesos() {
+            if (!db) { showToast('Sin conexion a la nube.'); return; }
+            let d = parseInt(document.getElementById('pesoDocenteInput').value, 10);
+            if (isNaN(d) || d < 0 || d > 100) { showToast('El porcentaje del docente debe estar entre 0 y 100.'); return; }
+            const c = 100 - d;
+            pesoDocente = d / 100; pesoCoeval = c / 100;
+            const st = document.getElementById('pesoStatus');
+            try {
+                if (st) st.textContent = 'Guardando...';
+                await db.ref(CONFIG_NODE).set({ pesoDocente: pesoDocente, pesoCoeval: pesoCoeval });
+                document.getElementById('pesoDocLabel').textContent = d;
+                document.getElementById('pesoCoevalLabel').textContent = c;
+                document.getElementById('pesoDocRep').textContent = d;
+                document.getElementById('pesoCoeRep').textContent = c;
+                document.getElementById('pesoHeader').textContent = d + '% rubrica docente / ' + c + '% coevaluacion';
+                if (st) st.textContent = 'Pesos: ' + d + '% / ' + c + '%';
+                showToast('Pesos guardados: docente ' + d + '% / coevaluacion ' + c + '%');
+                renderLiveGrades();
+            } catch (e) { if (st) st.textContent = 'Error: ' + e.message; }
+        }
+
+        function armButton(btn, textoConfirmar) {
+            if (!btn) return true;
+            if (btn.dataset.armed === '1') { btn.dataset.armed = ''; return true; }
+            btn.dataset.armed = '1';
+            btn.dataset.origText = btn.textContent;
+            btn.textContent = textoConfirmar;
+            btn.classList.add('ring-2', 'ring-red-300');
+            setTimeout(() => {
+                if (btn.isConnected && btn.dataset.armed === '1') {
+                    btn.dataset.armed = '';
+                    btn.textContent = btn.dataset.origText;
+                    btn.classList.remove('ring-2', 'ring-red-300');
+                }
+            }, 6000);
+            return false;
+        }
+
+
+        // --- GESTION DE EQUIPOS ---
+        function editorData() { return teams; }
+
+        function editorGenerateTeams() {
+            const n = parseInt(document.getElementById('numTeams').value, 10) || 0;
+            const max = parseInt(document.getElementById('numMembers').value, 10) || 0;
+            if (n <= 0 || max <= 0) { showToast('Ingrese un numero valido de equipos e integrantes.'); return; }
+            const prev = editorData();
+            const out = [];
+            for (let i = 0; i < n; i++) {
+                const id = 'G' + (i + 1);
+                let topic = (prev[i] && prev[i].topic) ? prev[i].topic : '';
+                let members = (prev[i] && prev[i].members) ? prev[i].members : [];
+                out.push({ id: id, topic: topic, members: members, maxMembers: max });
+            }
+            teams = out;
+            renderTeamEditor();
+            showToast('Estructura de ' + n + ' equipos generada (aun no se guarda en la nube).');
+        }
+
+        function editorRandomAssign() {
+            const t = editorData();
+            if (t.length === 0) { showToast("Primero presione 'Generar Estructura'."); return; }
+            const max = t[0].maxMembers || 4;
+            t.forEach(x => { x.members = []; });
+            const shuffled = ROSTER.slice();
+            for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const tmp = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = tmp; }
+            let idx = 0;
+            shuffled.forEach(s => {
+                let placed = false, tries = 0;
+                while (!placed && tries < t.length) {
+                    if (t[idx].members.length < max) { t[idx].members.push(s); placed = true; }
+                    idx = (idx + 1) % t.length; tries++;
+                }
+                if (!placed) t[0].members.push(s);
+            });
+            renderTeamEditor();
+            showToast('Asignacion aleatoria aplicada (aun no se guarda en la nube).');
+        }
+
+        function editorRemoveFromTeam(encName, teamIndex) {
+            const name = decodeURIComponent(encName);
+            teams[teamIndex].members = teams[teamIndex].members.filter(m => m !== name);
+            renderTeamEditor();
+        }
+        function editorAssignToTeam(encName, teamIndex) {
+            const name = decodeURIComponent(encName);
+            teams.forEach(t => { t.members = t.members.filter(m => m !== name); });
+            if (teamIndex >= 0) teams[teamIndex].members.push(name);
+            renderTeamEditor();
+        }
+
+        function renderTeamEditor() {
+            const unassignedBox = document.getElementById('unassignedList');
+            if (!unassignedBox) return;
+            const unassigned = ROSTER.filter(s => !teams.some(t => t.members.includes(s)));
+            document.getElementById('unassignedCount').textContent = unassigned.length;
+            unassignedBox.innerHTML = unassigned.map(name => {
+                const enc = encodeURIComponent(name);
+                return '<div class="p-2 border rounded bg-white shadow-sm flex flex-col items-center gap-1 text-center">' +
+                    '<span class="text-[11px] font-medium text-gray-800">' + shortName(name) + '</span>' +
+                    '<select onchange="editorAssignToTeam(\'' + enc + '\', this.value)" class="w-full text-[10px] border rounded p-0.5 bg-blue-50 cursor-pointer">' +
+                    '<option value="-1">Asignar a equipo...</option>' +
+                    teams.map((t, i) => '<option value="' + i + '">' + groupLabel(t.id) + '</option>').join('') +
+                    '</select></div>';
+            }).join('') || '<p class="text-gray-400 text-xs col-span-2">Todos asignados.</p>';
+            document.getElementById('teamBuilder').innerHTML = teams.map((team, i) => {
+                const max = team.maxMembers || 4;
+                return '<div class="p-2 border-2 ' + (team.members.length > 0 ? 'border-green-300 bg-green-50' : 'border-gray-300 bg-gray-50') + ' rounded-lg flex flex-col">' +
+                    '<div class="flex justify-between items-center mb-1"><span class="text-xs font-bold text-gray-700">' + groupLabel(team.id) + '</span>' +
+                    '<span class="text-[10px] ' + (team.members.length >= max ? 'text-red-500 font-bold' : 'text-gray-500') + '">' + team.members.length + '/' + max + '</span></div>' +
+                    '<input type="text" value="' + (team.topic || '') + '" onchange="editorData()[' + i + '].topic = this.value" class="w-full px-1 py-0.5 border rounded text-[10px] font-medium mb-2" placeholder="Tema...">' +
+                    '<div class="space-y-1 flex-grow">' +
+                    (team.members.length > 0 ? team.members.map(m => {
+                        const encM = encodeURIComponent(m);
+                        return '<div class="p-1 bg-white rounded border flex justify-between items-center shadow-sm"><span class="text-[10px] flex-1 mr-1">' + shortName(m) + '</span>' +
+                            '<button onclick="editorRemoveFromTeam(\'' + encM + '\', ' + i + ')" class="text-red-500 font-bold text-xs px-1 hover:bg-red-100 rounded">X</button></div>';
+                    }).join('') : '<span class="text-[10px] text-gray-400 italic">Vacio</span>') +
+                    '</div></div>';
+            }).join('') || '<p class="text-gray-400 text-xs col-span-3">Genere la estructura.</p>';
+        }
+
+        async function saveTeamsToCloud() {
+            try {
+                if (!db) throw new Error('Sin conexion a la nube.');
+                await db.ref(TEAMS_NODE).set({ teams: editorData() });
+                document.getElementById('teamsCloudStatus').textContent = 'Guardado en la nube el ' + new Date().toLocaleTimeString('es-EC');
+                showToast('Equipos guardados en la nube.');
+            } catch (e) { showToast('Error al guardar equipos: ' + e.message); }
+        }
+
+        async function resetTeamsToDefault(btn) {
+            if (!armButton(btn, 'Confirmar restaurar equipos?')) return;
+            btn.textContent = btn.dataset.origText;
+            btn.classList.remove('ring-2', 'ring-red-300');
+            teams = JSON.parse(JSON.stringify(DEFAULT_TEAMS)).map(t => { t.maxMembers = 4; return t; });
+            renderTeamEditor();
+            showToast('Equipos restaurados a los originales (presione Guardar en la nube para aplicarlos).');
+        }
+
+
+        // --- COEVALUACION: FLUJO DEL ALUMNO ---
+        function renderEvaluators() {
+            const select = document.getElementById('evaluator');
+            if (!select) return;
+            const cur = select.value;
+            select.innerHTML = '<option value="">Seleccione su nombre...</option>';
+            ROSTER.forEach(name => { select.innerHTML += '<option value="' + name + '">' + shortName(name) + '</option>'; });
+            select.value = cur;
+        }
+        function renderConsultaEvaluadores() {
+            const select = document.getElementById('consultaEvaluador');
+            if (!select) return;
+            const cur = select.value;
+            select.innerHTML = '<option value="">Seleccione su nombre...</option>';
+            ROSTER.forEach(name => { select.innerHTML += '<option value="' + name + '">' + shortName(name) + '</option>'; });
+            select.value = cur;
+        }
+
+        function handleEvaluatorChange() {
+            const evaluator = document.getElementById('evaluator').value;
+            const box = document.getElementById('groupSelectionBox');
+            const evalArea = document.getElementById('evaluationArea');
+            const backBox = document.getElementById('backToEvalBox');
+            if (!box) return;
+            if (!evaluationsActive) {
+                box.classList.add('hidden');
+                evalArea.innerHTML = '<p class="text-red-700 bg-red-50 p-4 text-center rounded border border-red-200 font-bold text-lg">El tiempo para registrar coevaluaciones ha finalizado. Gracias por participar.</p>';
+                backBox.classList.add('hidden');
+                return;
+            }
+            if (evaluator) box.classList.remove('hidden'); else box.classList.add('hidden');
+            evalArea.innerHTML = '';
+            backBox.classList.add('hidden');
+            populateGroupDropdown();
+        }
+
+        function populateGroupDropdown() {
+            const evaluator = document.getElementById('evaluator').value;
+            const select = document.getElementById('groupToEvaluate');
+            if (!select) return;
+            select.innerHTML = '<option value="">Seleccione un grupo...</option>';
+            if (!evaluator) return;
+            const myGroup = findGroupOf(evaluator);
+            teams.forEach((team, i) => {
+                if (myGroup && team.id === myGroup.id) return;
+                select.innerHTML += '<option value="' + i + '">' + groupLabel(team.id) + ' (' + smap(team.members) + ')</option>';
+            });
+        }
+
+        function coevalBtnClass(color) {
+            if (color === 'green') return 'lv-green';
+            if (color === 'blue') return 'lv-blue';
+            return 'lv-red';
+        }
+
+        function loadSelectedGroup() {
+            const groupIndex = document.getElementById('groupToEvaluate').value;
+            const evaluator = document.getElementById('evaluator').value;
+            const evalArea = document.getElementById('evaluationArea');
+            const backBox = document.getElementById('backToEvalBox');
+            if (groupIndex === '' || isNaN(parseInt(groupIndex, 10))) { evalArea.innerHTML = ''; backBox.classList.add('hidden'); return; }
+            const gi = parseInt(groupIndex, 10);
+            const team = teams[gi];
+            const myLogs = allLogs.filter(l => l.evaluator === evaluator);
+
+            const membersHtml = team.members.map(member => {
+                const sid = safeKey(member);
+                const prev = myLogs.find(l => l.grupoId === team.id && l.evaluated === member);
+                const critHtml = coevalRubric.map((c, ci) => {
+                    const btns = c.levels.map(lvl =>
+                        '<button type="button" onclick="selectCoevalLevel(\'' + c.key + '\', \'' + sid + '\', ' + lvl.pts + ', this)" class="lvl-btn flex-1 px-2 py-2 border rounded bg-white text-gray-700 border-gray-300 hover:bg-blue-50 text-xs ' + coevalBtnClass(lvl.pts >= 3 ? 'green' : (lvl.pts >= 2 ? 'blue' : 'red')) + '">' +
+                        '<span class="block font-bold">' + lvl.label + ' (' + lvl.pts + ' pts)</span>' +
+                        '<span class="block text-[10px] text-gray-500 mt-1 leading-tight">' + lvl.text + '</span></button>'
+                    ).join('');
+                    return '<div id="card-' + c.key + '-' + sid + '" class="flex flex-col p-2 bg-gray-50 rounded border">' +
+                        '<label class="block text-xs font-bold text-gray-800 mb-1">' + (ci + 1) + '. ' + c.title + ' (3 pts)</label>' +
+                        '<div class="flex gap-1 flex-col md:flex-row">' + btns + '</div>' +
+                        '<input type="hidden" id="score-' + c.key + '-' + sid + '" value=""></div>';
+                }).join('');
+                const prevBanner = prev ?
+                    '<div class="p-2 mb-2 bg-amber-50 border border-amber-300 rounded text-xs text-amber-800">Ya evaluaste a este companero (nota: <b>' + prev.nota + '/10</b>). Si guardas de nuevo, se <b>reemplaza</b>.</div>' : '';
+                return '<div class="border rounded-lg p-3 mb-3 bg-white">' +
+                    '<div class="flex justify-between items-center mb-2"><h4 class="font-bold text-gray-800">' + shortName(member) + '</h4>' +
+                    '<span class="px-3 py-1 rounded-full text-sm ' + (prev ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500') + '">' + (prev ? prev.nota + '/10' : 'Pendiente') + '</span></div>' +
+                    prevBanner +
+                    '<div class="space-y-2">' + critHtml + '</div>' +
+                    '<div class="mt-3 flex flex-wrap items-center gap-4">' +
+                    '<div class="text-base font-bold text-blue-900">Total: <span id="totalPreview-' + sid + '">-</span> / 10</div>' +
+                    '<button id="saveBtn-' + sid + '" onclick="saveEvaluation(\'' + encodeURIComponent(member) + '\', ' + gi + ')" class="bg-green-600 text-white px-5 py-2 rounded text-sm hover:bg-green-700 font-bold">Guardar nota</button>' +
+                    '</div></div>';
+            }).join('');
+
+            evalArea.innerHTML = '<div class="bg-gray-50 p-4 rounded-lg border">' +
+                '<div class="mb-3 border-b pb-2"><h3 class="font-bold text-blue-900 text-lg">' + groupLabel(team.id) + ': ' + team.topic + '</h3>' +
+                '<p class="text-xs text-gray-500">Califica a <b>cada integrante de forma individual</b>. La nota de cada uno es la suma de los 4 criterios sobre 12, convertida a 10.</p></div>' +
+                membersHtml + '</div>';
+            backBox.classList.remove('hidden');
+        }
+
+        function selectCoevalLevel(key, sid, pts, btn) {
+            document.getElementById('score-' + key + '-' + sid).value = pts;
+            btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            document.getElementById('card-' + key + '-' + sid).classList.remove('missing-score');
+            updateCoevalTotal(sid);
+        }
+
+        function updateCoevalTotal(sid) {
+            let total = 0, complete = true;
+            coevalRubric.forEach(c => {
+                const v = document.getElementById('score-' + c.key + '-' + sid).value;
+                if (v === '') complete = false; else total += parseFloat(v);
+            });
+            document.getElementById('totalPreview-' + sid).textContent = complete ? Math.round(total * 10 / 12) : '-';
+        }
+
+        async function saveEvaluation(encMember, groupIndex) {
+            const member = decodeURIComponent(encMember);
+            const sid = safeKey(member);
+            try {
+                if (!evaluationsActive) { showToast('El tiempo para registrar coevaluaciones ha finalizado.'); return; }
+                const evaluator = document.getElementById('evaluator').value;
+                if (!evaluator) { showToast("Primero selecciona tu nombre en el recuadro amarillo 'Evaluador'."); return; }
+                if (evaluator === member) { showToast('No puedes evaluarte a ti mismo.'); return; }
+                const team = teams[groupIndex];
+                const myGroup = findGroupOf(evaluator);
+                if (myGroup && myGroup.id === team.id) { showToast('No puedes evaluar a tu propio grupo.'); return; }
+
+                const criterios = {}; const missing = [];
+                let raw = 0;
+                coevalRubric.forEach(c => {
+                    const v = document.getElementById('score-' + c.key + '-' + sid).value;
+                    if (v === '') { missing.push(c.title); document.getElementById('card-' + c.key + '-' + sid).classList.add('missing-score'); }
+                    else { criterios[c.key] = parseFloat(v); raw += parseFloat(v); }
+                });
+                if (missing.length > 0) { showToast('Faltan niveles para ' + shortName(member) + ': ' + missing.join(', ') + '. Elige un nivel en cada criterio.'); return; }
+                const nota = Math.round(raw * 10 / 12);
+
+                const saveBtn = document.getElementById('saveBtn-' + sid);
+                if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Guardando...'; saveBtn.classList.add('opacity-50', 'cursor-not-allowed'); }
+
+                if (!db) throw new Error('No hay conexion con la base de datos (Firebase no cargo).');
+
+                const logKey = safeKey(team.id) + '__' + safeKey(evaluator) + '__' + sid;
+                const payload = { grupoId: team.id, grupoLabel: groupLabel(team.id), evaluator: evaluator, evaluated: member, criterios: criterios, nota: nota, timestamp: new Date().toLocaleString('es-EC') };
+                await db.ref(DB_NODE + '/' + safeKey(team.id) + '/' + logKey).set(payload);
+                showToast('Nota enviada: ' + shortName(member) + ' - ' + nota + '/10');
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Guardada (puedes corregirla)'; saveBtn.classList.remove('opacity-50', 'cursor-not-allowed'); saveBtn.classList.replace('bg-green-600', 'bg-blue-600'); }
+            } catch (e) {
+                console.error('Error guardando en Firebase:', e);
+                showToast('Error al guardar en la nube: ' + e.message);
+                const saveBtn = document.getElementById('saveBtn-' + sid);
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Guardar nota'; saveBtn.classList.remove('opacity-50', 'cursor-not-allowed'); }
+            }
+        }
+
+        function goBackToGroupSelection() {
+            document.getElementById('evaluationArea').innerHTML = '';
+            document.getElementById('backToEvalBox').classList.add('hidden');
+            document.getElementById('groupToEvaluate').value = '';
+            populateGroupDropdown();
+        }
+
+
+        // ============================================================
+        // MODELO POR ESTUDIANTE
+        // B y C: grupales (misma nota para los integrantes del grupo)
+        // D, E y llamados: individuales
+        // Nota ADA = (B + C + D + E) / 11 * 10 - descuento por lectura, piso 0
+        // Descuento por lectura: 1er llamado 0, 2do llamado 1, 3er llamado o mas 2
+        // ============================================================
+
+        function llamadosDescuento(n) {
+            if (typeof n !== 'number' || isNaN(n)) return 0;
+            if (n <= 1) return 0;
+            if (n === 2) return 1;
+            return 2;
+        }
+
+        function notaADAde(B, C, D, E, llamados) {
+            const raw = (B + C + D + E) / NOTA_MAX * 10;
+            const desc = llamadosDescuento(llamados);
+            const n = raw - desc;
+            return Math.round(Math.max(0, n) * 10) / 10;
+        }
+
+        function coevAvgFor(student) {
+            const logs = allLogs.filter(l => l.evaluated === student);
+            if (logs.length === 0) return null;
+            return avg(logs.map(l => parseFloat(l.nota)));
+        }
+
+        function calcNotaFinal(nADA, coev) {
+            if (nADA === null || coev === null) return null;
+            return nADA * pesoDocente + coev * pesoCoeval;
+        }
+
+        function orderedRoster() {
+            const out = [];
+            teams.forEach(t => t.members.forEach(m => { if (out.indexOf(m) === -1) out.push(m); }));
+            ROSTER.forEach(m => { if (out.indexOf(m) === -1) out.push(m); });
+            return out;
+        }
+
+        // --- RETROALIMENTACION AUTOMATICA ---
+        function buildFeedback(B, C, D, E, llamados, nADA, coev, nFinal) {
+            if (nADA === null) return 'Aun no hay nota del docente para este estudiante.';
+            const partes = [];
+            const crits = [
+                { val: B, max: 2, aspecto: 'el uso de la terminologia de la intervencion', tip: 'usar los terminos economicos en todos los bloques de la infografia, no solo en el titulo' },
+                { val: C, max: 3, aspecto: 'la aplicacion y el analisis del caso', tip: 'explicar como cambia el mercado y que gana y pierde cada parte interesada, con datos verificables' },
+                { val: D, max: 3, aspecto: 'el concepto clave', tip: 'explicar con sus palabras como el concepto clave da sentido al caso, desde la razon de la medida hasta el juicio final' },
+                { val: E, max: 3, aspecto: 'la evaluacion final', tip: 'cerrar con un juicio fundamentado sobre mantener, ajustar o reemplazar la medida, distinguiendo el corto y el largo plazo' }
+            ];
+            if (nADA >= 7) {
+                partes.push('Felicitaciones: su trabajo alcanzo ' + nADA.toFixed(1) + ' sobre diez en la rubrica de la ADA.');
+            } else {
+                const bajos = crits.filter(c => typeof c.val === 'number' && c.val / c.max < 0.7)
+                    .sort((a, b) => (a.val / a.max) - (b.val / b.max));
+                partes.push('Su nota de la ADA fue ' + nADA.toFixed(1) + ' sobre diez, por debajo de siete.');
+                if (bajos.length === 0) {
+                    partes.push('Ningun criterio quedo muy bajo, pero conviene sostener el trabajo con mas evidencia y precision.');
+                } else {
+                    partes.push('La principal oportunidad de mejora esta en ' + bajos[0].aspecto + ': conviene ' + bajos[0].tip + '.');
+                    if (bajos.length > 1) partes.push('Tambien conviene reforzar ' + bajos[1].aspecto + ': ' + bajos[1].tip + '.');
+                }
+            }
+            if (typeof llamados === 'number' && llamados >= 2) {
+                const desc = llamadosDescuento(llamados);
+                const descTxt = (desc === 1) ? '1 punto' : desc + ' puntos';
+                partes.push('Se registro lectura del material durante la exposicion (' + llamados + ' llamados), con un descuento de ' + descTxt + ' en la nota individual.');
+            }
+            if (coev !== null) {
+                partes.push('Sus companeros lo coevaluaron con ' + coev.toFixed(1) + ' sobre diez en promedio.');
+            }
+            return partes.join(' ');
+        }
+
+        // --- RUBRICA DOCENTE (por estudiante) ---
+        let docEvalTemp = {};
+
+        function docInitFromCloud(gid) {
+            const g = teams.find(t => t.id === gid);
+            if (!g) return;
+            if (!docEvalTemp[gid]) docEvalTemp[gid] = { B: null, C: null, members: {} };
+            const t = docEvalTemp[gid];
+            g.members.forEach(m => {
+                const k = safeKey(m);
+                const s = docenteScores[k];
+                if (!s) return;
+                if (t.B === null && typeof s.B === 'number') t.B = s.B;
+                if (t.C === null && typeof s.C === 'number') t.C = s.C;
+                if (!t.members[k]) {
+                    t.members[k] = {
+                        D: (typeof s.D === 'number') ? s.D : null,
+                        E: (typeof s.E === 'number') ? s.E : null,
+                        llamados: (typeof s.llamados === 'number') ? s.llamados : null
+                    };
+                }
+            });
+        }
+
+        function docGrupoCambio() { renderDocenteRubrica(); }
+
+        function docSetBC(gid, crit, val) {
+            if (!docEvalTemp[gid]) docEvalTemp[gid] = { B: null, C: null, members: {} };
+            docEvalTemp[gid][crit] = (val === '') ? null : parseInt(val, 10);
+            renderDocenteRubrica();
+        }
+
+        function docSetMember(gid, skey, field, val) {
+            if (!docEvalTemp[gid]) docEvalTemp[gid] = { B: null, C: null, members: {} };
+            if (!docEvalTemp[gid].members[skey]) docEvalTemp[gid].members[skey] = { D: null, E: null, llamados: null };
+            docEvalTemp[gid].members[skey][field] = (val === '') ? null : parseInt(val, 10);
+            renderDocenteRubrica();
+        }
+
+        function renderDocenteRubrica() {
+            const container = document.getElementById('docenteRubricaArea');
+            if (!container) return;
+            if (!teams || teams.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-sm">No hay grupos configurados.</p>';
+                return;
+            }
+            const prevSel = document.getElementById('docGrupoSelect');
+            const prev = prevSel ? prevSel.value : null;
+            const gid = (prev && teams.find(t => t.id === prev)) ? prev : teams[0].id;
+            docInitFromCloud(gid);
+            const t = docEvalTemp[gid];
+            const g = teams.find(x => x.id === gid);
+
+            const selOpts = (max, cur) => {
+                let h = '<option value="">--</option>';
+                for (let i = 0; i <= max; i++) h += '<option value="' + i + '"' + (cur === i ? ' selected' : '') + '>' + i + '</option>';
+                return h;
+            };
+
+            let html = '<div class="mb-3 flex flex-wrap items-center gap-3">' +
+                '<label class="text-sm font-semibold">Grupo a evaluar:</label>' +
+                '<select id="docGrupoSelect" onchange="docGrupoCambio()" class="border rounded px-2 py-1 text-sm">' +
+                teams.map(x => '<option value="' + x.id + '"' + (x.id === gid ? ' selected' : '') + '>' + groupLabel(x.id) + ' - ' + (x.topic || '') + '</option>').join('') +
+                '</select></div>';
+
+            html += '<div class="p-3 bg-gray-50 rounded border mb-3">' +
+                '<h5 class="text-sm font-bold text-gray-700 mb-2">Bloque grupal (misma nota para los integrantes del grupo)</h5>' +
+                '<div class="flex flex-wrap gap-4">' +
+                '<div><label class="block text-xs font-medium">B. Terminologia (max 2)</label>' +
+                '<select onchange="docSetBC(\'' + gid + '\',\'B\',this.value)" class="border rounded px-2 py-1 text-sm">' + selOpts(2, t.B) + '</select></div>' +
+                '<div><label class="block text-xs font-medium">C. Aplicacion y analisis (max 3)</label>' +
+                '<select onchange="docSetBC(\'' + gid + '\',\'C\',this.value)" class="border rounded px-2 py-1 text-sm">' + selOpts(3, t.C) + '</select></div>' +
+                '</div></div>';
+
+            html += '<div class="overflow-x-auto"><table class="w-full border-collapse text-xs">' +
+                '<thead><tr class="bg-blue-100 text-blue-800">' +
+                '<th class="border p-2 text-left">Estudiante</th>' +
+                '<th class="border p-2 text-center">D. Concepto clave (max 3)</th>' +
+                '<th class="border p-2 text-center">E. Evaluacion (max 3)</th>' +
+                '<th class="border p-2 text-center">Llamados por lectura</th>' +
+                '<th class="border p-2 text-center">Descuento</th>' +
+                '<th class="border p-2 text-center">Nota ADA</th></tr></thead><tbody>';
+
+            g.members.forEach(m => {
+                const k = safeKey(m);
+                if (!t.members[k]) t.members[k] = { D: null, E: null, llamados: null };
+                const mm = t.members[k];
+                const desc = (typeof mm.llamados === 'number') ? llamadosDescuento(mm.llamados) : null;
+                const nADA = (typeof t.B === 'number' && typeof t.C === 'number' && typeof mm.D === 'number' && typeof mm.E === 'number')
+                    ? notaADAde(t.B, t.C, mm.D, mm.E, (typeof mm.llamados === 'number') ? mm.llamados : 0) : null;
+                html += '<tr>' +
+                    '<td class="border p-2 font-medium">' + shortName(m) + '</td>' +
+                    '<td class="border p-1 text-center"><select onchange="docSetMember(\'' + gid + '\',\'' + k + '\',\'D\',this.value)" class="border rounded px-1 py-0.5 text-xs">' + selOpts(3, mm.D) + '</select></td>' +
+                    '<td class="border p-1 text-center"><select onchange="docSetMember(\'' + gid + '\',\'' + k + '\',\'E\',this.value)" class="border rounded px-1 py-0.5 text-xs">' + selOpts(3, mm.E) + '</select></td>' +
+                    '<td class="border p-1 text-center"><select onchange="docSetMember(\'' + gid + '\',\'' + k + '\',\'llamados\',this.value)" class="border rounded px-1 py-0.5 text-xs">' + selOpts(3, mm.llamados) + '</select></td>' +
+                    '<td class="border p-2 text-center ' + (desc ? 'text-red-600 font-bold' : 'text-gray-400') + '">' + (desc === null ? '--' : (desc === 0 ? '0' : '-' + desc)) + '</td>' +
+                    '<td class="border p-2 text-center font-bold ' + (nADA !== null ? (nADA >= 7 ? 'text-green-700' : 'text-red-600') : 'text-gray-400') + '">' + (nADA !== null ? nADA.toFixed(1) : '--') + '</td>' +
+                    '</tr>';
+            });
+            html += '</tbody></table></div>';
+
+            html += '<div class="mt-3 flex flex-wrap items-center gap-3">' +
+                '<button onclick="docGuardarGrupo(\'' + gid + '\')" class="bg-green-700 text-white px-5 py-2 rounded font-bold text-sm hover:bg-green-800">Guardar evaluacion del grupo</button>' +
+                '<button onclick="docBorrarGrupo(this)" class="bg-red-500 text-white px-4 py-2 rounded text-sm hover:bg-red-600">Borrar notas del grupo</button>' +
+                '<span id="docSaveStatus" class="text-xs text-gray-500"></span></div>';
+
+            container.innerHTML = html;
+        }
+
+        async function docGuardarGrupo(gid) {
+            if (!db) { showToast('Sin conexion a la nube.'); return; }
+            const t = docEvalTemp[gid];
+            const g = teams.find(x => x.id === gid);
+            if (!t || !g) return;
+            if (typeof t.B !== 'number' || typeof t.C !== 'number') { showToast('Falta calificar B y C (bloque grupal).'); return; }
+            const faltan = [];
+            g.members.forEach(m => {
+                const mm = t.members[safeKey(m)] || {};
+                if (typeof mm.D !== 'number' || typeof mm.E !== 'number' || typeof mm.llamados !== 'number') faltan.push(shortName(m));
+            });
+            if (faltan.length > 0) { showToast('Faltan D, E o llamados en: ' + faltan.join(', ') + '.'); return; }
+            const st = document.getElementById('docSaveStatus');
+            try {
+                if (st) st.textContent = 'Guardando...';
+                const updates = {};
+                g.members.forEach(m => {
+                    const k = safeKey(m);
+                    const mm = t.members[k];
+                    updates[k] = {
+                        grupoId: g.id, B: t.B, C: t.C, D: mm.D, E: mm.E, llamados: mm.llamados,
+                        descuento: llamadosDescuento(mm.llamados),
+                        notaADA: notaADAde(t.B, t.C, mm.D, mm.E, mm.llamados),
+                        timestamp: new Date().toISOString()
+                    };
+                });
+                await db.ref(DOCENTE_NODE).update(updates);
+                if (st) st.textContent = 'Guardado ' + new Date().toLocaleTimeString('es-EC');
+                showToast('Evaluacion del ' + groupLabel(gid) + ' guardada.');
+            } catch (e) { if (st) st.textContent = 'Error: ' + e.message; }
+        }
+
+        async function docBorrarGrupo(btn) {
+            if (!db) { showToast('Sin conexion a la nube.'); return; }
+            if (!armButton(btn, 'Confirmar borrar notas del grupo?')) return;
+            btn.textContent = btn.dataset.origText;
+            btn.classList.remove('ring-2', 'ring-red-300');
+            const gid = document.getElementById('docGrupoSelect') ? document.getElementById('docGrupoSelect').value : null;
+            if (!gid) return;
+            const g = teams.find(x => x.id === gid);
+            if (!g) return;
+            try {
+                const updates = {};
+                g.members.forEach(m => { updates[safeKey(m)] = null; });
+                await db.ref(DOCENTE_NODE).update(updates);
+                docEvalTemp[gid] = { B: null, C: null, members: {} };
+                showToast('Notas del ' + groupLabel(gid) + ' borradas.');
+                renderDocenteRubrica();
+            } catch (e) { showToast('Error: ' + e.message); }
+        }
+
+        // --- TABLA EN VIVO ---
+        function renderLiveGrades() {
+            const tbody = document.getElementById('liveGradesBody');
+            if (!tbody) return;
+            const list = orderedRoster();
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="12" class="border p-2 text-center text-gray-400">Sin estudiantes.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = list.map(student => {
+                const k = safeKey(student);
+                const s = docenteScores[k] || {};
+                const g = findGroupOf(student);
+                const B = (typeof s.B === 'number') ? s.B : null;
+                const C = (typeof s.C === 'number') ? s.C : null;
+                const D = (typeof s.D === 'number') ? s.D : null;
+                const E = (typeof s.E === 'number') ? s.E : null;
+                const L = (typeof s.llamados === 'number') ? s.llamados : null;
+                const desc = (L !== null) ? llamadosDescuento(L) : null;
+                const nADA = (B !== null && C !== null && D !== null && E !== null) ? notaADAde(B, C, D, E, L || 0) : null;
+                const coev = coevAvgFor(student);
+                const nFinal = calcNotaFinal(nADA, coev);
+                const fb = buildFeedback(B, C, D, E, L, nADA, coev, nFinal);
+                const color = nFinal === null ? 'text-gray-400' : (nFinal >= 7 ? 'score-green' : (nFinal >= 6 ? 'score-blue' : 'score-red'));
+                const fbClass = nADA === null ? 'text-gray-400' : (nADA >= 7 ? 'text-green-700' : 'text-red-700');
+                const cell = v => '<td class="border p-2 text-center text-xs">' + (v !== null ? v : '--') + '</td>';
+                return '<tr>' +
+                    '<td class="border p-2 text-xs">' + shortName(student) + '</td>' +
+                    '<td class="border p-2 text-center text-xs">' + (g ? groupLabel(g.id) : '--') + '</td>' +
+                    cell(B) + cell(C) + cell(D) + cell(E) + cell(L) +
+                    '<td class="border p-2 text-center text-xs ' + (desc ? 'text-red-600 font-bold' : 'text-gray-400') + '">' + (desc === null ? '--' : (desc === 0 ? '0' : '-' + desc)) + '</td>' +
+                    '<td class="border p-2 text-center text-sm font-bold ' + (nADA !== null ? (nADA >= 7 ? 'text-green-700' : 'text-red-600') : 'text-gray-400') + '">' + (nADA !== null ? nADA.toFixed(1) : 'Pend.') + '</td>' +
+                    '<td class="border p-2 text-center text-sm ' + (coev !== null ? 'text-blue-700' : 'text-gray-400') + '">' + (coev !== null ? coev.toFixed(1) : 'Pend.') + '</td>' +
+                    '<td class="border p-2 text-center text-sm ' + color + '">' + (nFinal !== null ? nFinal.toFixed(1) : 'Pendiente') + '</td>' +
+                    '<td class="border p-2 text-[11px] leading-snug ' + fbClass + '">' + fb + '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        function renderEvalLogList() {
+            const container = document.getElementById('evalLogList');
+            if (!container) return;
+            if (allLogs.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-sm p-2 text-center">No hay registros de coevaluacion.</p>';
+                return;
+            }
+            container.innerHTML = allLogs.map(log =>
+                '<div class="flex justify-between items-center text-xs p-2 border-l-4 border-red-300 bg-white rounded shadow-sm">' +
+                '<div class="flex-1 mr-2"><strong class="text-gray-800">' + shortName(log.evaluator) + '</strong> evaluo a <strong class="text-gray-800">' + shortName(log.evaluated) + '</strong> (' + (log.grupoLabel || '') + ')<br>' +
+                '<span class="text-gray-500">Nota: ' + log.nota + '/10 | ' + (log.timestamp || '') + '</span></div>' +
+                '<button onclick="deleteEvalLog(\'' + log.grupoId + '\',\'' + log.logId + '\', this)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 font-bold whitespace-nowrap">Eliminar</button></div>'
+            ).join('');
+        }
+
+        async function deleteEvalLog(grupoId, logId, btn) {
+            if (!db) { showToast('Sin conexion a la nube.'); return; }
+            if (btn && btn.dataset.armed !== '1') {
+                btn.dataset.armed = '1';
+                btn.textContent = 'Confirmar?';
+                btn.classList.remove('bg-red-500');
+                btn.classList.add('bg-red-700', 'ring-2', 'ring-red-300');
+                setTimeout(() => {
+                    if (btn.isConnected && btn.dataset.armed === '1') {
+                        btn.dataset.armed = '';
+                        btn.textContent = 'Eliminar';
+                        btn.classList.add('bg-red-500');
+                        btn.classList.remove('bg-red-700', 'ring-2', 'ring-red-300');
+                    }
+                }, 5000);
+                return;
+            }
+            try {
+                if (btn) { btn.disabled = true; btn.textContent = 'Eliminando...'; }
+                await db.ref(DB_NODE + '/' + grupoId + '/' + logId).remove();
+                showToast('Registro eliminado de la nube.');
+            } catch (e) {
+                showToast('Error al eliminar: ' + e.message);
+                if (btn) { btn.disabled = false; btn.textContent = 'Eliminar'; btn.dataset.armed = ''; }
+            }
+        }
+
+        function updateStats() {
+            const el = document.getElementById('statEvals');
+            if (!el) return;
+            el.textContent = allLogs.length + ' coevaluaciones';
+            const scores = allLogs.map(l => parseFloat(l.nota)).filter(v => !isNaN(v));
+            document.getElementById('statProm').textContent = scores.length ? avg(scores).toFixed(1) : 'N/A';
+            document.getElementById('statMax').textContent = scores.length ? Math.max.apply(null, scores) : 'N/A';
+            document.getElementById('statMin').textContent = scores.length ? Math.min.apply(null, scores) : 'N/A';
+            const pc = document.getElementById('participationCounter');
+            if (pc) {
+                const evals = new Set(allLogs.map(l => l.evaluator));
+                pc.textContent = 'Participacion: ' + evals.size + ' de ' + ROSTER.length + ' estudiantes han coevaluado';
+            }
+        }
+
+        // --- CONSULTA DE MI NOTA ---
+        function renderConsulta() {
+            const area = document.getElementById('consultaArea');
+            if (!area) return;
+            const sel = document.getElementById('consultaEvaluador');
+            const student = sel ? sel.value : '';
+            if (!student) {
+                area.innerHTML = '<p class="text-gray-500 text-sm">Selecciona tu nombre para consultar tu nota de la ADA 3, tu promedio de coevaluacion y tu nota final.</p>';
+                return;
+            }
+            const k = safeKey(student);
+            const s = docenteScores[k] || {};
+            const g = findGroupOf(student);
+            const B = (typeof s.B === 'number') ? s.B : null;
+            const C = (typeof s.C === 'number') ? s.C : null;
+            const D = (typeof s.D === 'number') ? s.D : null;
+            const E = (typeof s.E === 'number') ? s.E : null;
+            const L = (typeof s.llamados === 'number') ? s.llamados : null;
+            const desc = (L !== null) ? llamadosDescuento(L) : null;
+            const nADA = (B !== null && C !== null && D !== null && E !== null) ? notaADAde(B, C, D, E, L || 0) : null;
+            const coev = coevAvgFor(student);
+            const nFinal = calcNotaFinal(nADA, coev);
+            const fb = buildFeedback(B, C, D, E, L, nADA, coev, nFinal);
+            const nCoev = allLogs.filter(l => l.evaluated === student).length;
+            const color = nFinal === null ? 'text-gray-500' : (nFinal >= 7 ? 'text-green-700' : (nFinal >= 6 ? 'text-blue-700' : 'text-red-700'));
+            const row = (label, val) => '<div class="flex justify-between border-b py-1"><span class="text-gray-600">' + label + '</span><span class="font-semibold">' + val + '</span></div>';
+            area.innerHTML = '<div class="p-4 bg-white rounded border max-w-2xl">' +
+                '<h3 class="font-bold text-blue-900 text-lg mb-2">' + shortName(student) + '</h3>' +
+                row('Grupo', g ? groupLabel(g.id) : 'Sin grupo') +
+                row('B. Terminologia (grupal, max 2)', B !== null ? B : 'Pendiente') +
+                row('C. Aplicacion y analisis (grupal, max 3)', C !== null ? C : 'Pendiente') +
+                row('D. Concepto clave (individual, max 3)', D !== null ? D : 'Pendiente') +
+                row('E. Evaluacion (individual, max 3)', E !== null ? E : 'Pendiente') +
+                row('Llamados por lectura', L !== null ? L : 'Pendiente') +
+                row('Descuento por lectura', desc === null ? 'Pendiente' : (desc === 0 ? 'Sin descuento' : '-' + desc + (desc === 1 ? ' punto' : ' puntos'))) +
+                row('Nota de la ADA', nADA !== null ? nADA.toFixed(1) + ' / 10' : 'Pendiente') +
+                row('Nota de coevaluacion (' + nCoev + (nCoev === 1 ? ' evaluacion)' : ' evaluaciones)'), coev !== null ? coev.toFixed(1) + ' / 10' : 'Pendiente') +
+                '<div class="flex justify-between py-2 mt-1"><span class="font-bold">Nota final</span><span class="font-bold text-xl ' + color + '">' + (nFinal !== null ? nFinal.toFixed(1) + ' / 10' : 'Pendiente') + '</span></div>' +
+                '<div class="mt-3 p-3 bg-blue-50 rounded border border-blue-200 text-sm text-gray-700">' + fb + '</div>' +
+                '</div>';
+        }
+
+        // --- BORRADO MASIVO DE COEVALUACIONES ---
+        async function clearCloudData(btn) {
+            if (!db) { showToast('Sin conexion a la nube.'); return; }
+            if (!armButton(btn, 'SEGURO? Borra TODAS las coevaluaciones - click de nuevo')) return;
+            try {
+                btn.disabled = true; btn.textContent = 'Borrando...';
+                await db.ref(DB_NODE).remove();
+                showToast('Coevaluaciones borradas.');
+                btn.disabled = false; btn.textContent = btn.dataset.origText;
+                btn.classList.remove('ring-2', 'ring-red-300');
+            } catch (e) {
+                showToast('Error: ' + e.message);
+                btn.disabled = false; btn.textContent = btn.dataset.origText;
+                btn.classList.remove('ring-2', 'ring-red-300');
+            }
+        }
+
+        // --- EXPORTACION ---
+        function exportRows() {
+            const list = orderedRoster();
+            const resumen = [['Estudiante', 'Grupo', 'B', 'C', 'D', 'E', 'Llamados', 'Descuento', 'Nota ADA', 'Nota Coeval', 'Nota Final', 'Retroalimentacion']];
+            list.forEach(student => {
+                const k = safeKey(student);
+                const s = docenteScores[k] || {};
+                const g = findGroupOf(student);
+                const B = (typeof s.B === 'number') ? s.B : '';
+                const C = (typeof s.C === 'number') ? s.C : '';
+                const D = (typeof s.D === 'number') ? s.D : '';
+                const E = (typeof s.E === 'number') ? s.E : '';
+                const L = (typeof s.llamados === 'number') ? s.llamados : '';
+                const desc = (typeof s.llamados === 'number') ? llamadosDescuento(s.llamados) : '';
+                const nADA = (typeof s.B === 'number' && typeof s.C === 'number' && typeof s.D === 'number' && typeof s.E === 'number')
+                    ? notaADAde(s.B, s.C, s.D, s.E, s.llamados) : null;
+                const coev = coevAvgFor(student);
+                const nFinal = calcNotaFinal(nADA, coev);
+                const fb = buildFeedback(
+                    (typeof s.B === 'number') ? s.B : null, (typeof s.C === 'number') ? s.C : null,
+                    (typeof s.D === 'number') ? s.D : null, (typeof s.E === 'number') ? s.E : null,
+                    (typeof s.llamados === 'number') ? s.llamados : null, nADA, coev, nFinal);
+                resumen.push([
+                    shortName(student), g ? groupLabel(g.id) : '', B, C, D, E, L, desc,
+                    nADA !== null ? nADA.toFixed(1) : '', coev !== null ? coev.toFixed(1) : '',
+                    nFinal !== null ? nFinal.toFixed(1) : '', fb
+                ]);
+            });
+            const detalle = [['Evaluador', 'Estudiante evaluado', 'Grupo', 'Aporte', 'Preparacion', 'Claridad', 'Respeto', 'Nota /10', 'Fecha']];
+            allLogs.forEach(l => {
+                const c = l.criterios || {};
+                detalle.push([
+                    shortName(l.evaluator), shortName(l.evaluated), l.grupoLabel || '',
+                    (typeof c.c1 === 'number') ? c.c1 : '', (typeof c.c2 === 'number') ? c.c2 : '',
+                    (typeof c.c3 === 'number') ? c.c3 : '', (typeof c.c4 === 'number') ? c.c4 : '',
+                    (typeof l.nota === 'number') ? l.nota : '', l.timestamp || ''
+                ]);
+            });
+            return { resumen: resumen, detalle: detalle };
+        }
+
+        function _csvCell(v) {
+            const s = (v === null || v === undefined) ? '' : String(v);
+            return '"' + s.replace(/"/g, '""') + '"';
+        }
+
+        function _download(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click();
+            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+        }
+
+        function exportToCSV() {
+            try {
+                const r = exportRows();
+                let csv = '\ufeff';
+                csv += 'RESUMEN POR ESTUDIANTE\r\n';
+                r.resumen.forEach(row => { csv += row.map(_csvCell).join(',') + '\r\n'; });
+                csv += '\r\nDETALLE DE COEVALUACIONES\r\n';
+                r.detalle.forEach(row => { csv += row.map(_csvCell).join(',') + '\r\n'; });
+                _download(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), 'Reporte_ADA3_Provision_Directa.csv');
+                showToast('Reporte CSV descargado.');
+            } catch (e) { showToast('Error al generar CSV: ' + e.message); }
+        }
+
+        // --- GENERADOR XLSX SIN DEPENDENCIAS (ZIP almacenado + CRC32) ---
+        function _crc32(u8) {
+            let crc = 0xFFFFFFFF;
+            for (let i = 0; i < u8.length; i++) {
+                crc ^= u8[i];
+                for (let k = 0; k < 8; k++) crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
+            }
+            return (crc ^ 0xFFFFFFFF) >>> 0;
+        }
+
+        function _zip(files) {
+            const enc = new TextEncoder();
+            const chunks = [];
+            const central = [];
+            let offset = 0;
+            files.forEach(f => {
+                const nameBytes = enc.encode(f.name);
+                const crc = _crc32(f.data);
+                const size = f.data.length;
+                const lh = new Uint8Array(30 + nameBytes.length);
+                const dv = new DataView(lh.buffer);
+                dv.setUint32(0, 0x04034b50, true);
+                dv.setUint16(4, 20, true);
+                dv.setUint16(6, 0, true);
+                dv.setUint16(8, 0, true);
+                dv.setUint16(10, 0, true);
+                dv.setUint16(12, 0, true);
+                dv.setUint32(14, crc, true);
+                dv.setUint32(18, size, true);
+                dv.setUint32(22, size, true);
+                dv.setUint16(26, nameBytes.length, true);
+                dv.setUint16(28, 0, true);
+                lh.set(nameBytes, 30);
+                chunks.push(lh, f.data);
+                const ch = new Uint8Array(46 + nameBytes.length);
+                const cv = new DataView(ch.buffer);
+                cv.setUint32(0, 0x02014b50, true);
+                cv.setUint16(4, 20, true);
+                cv.setUint16(6, 20, true);
+                cv.setUint16(8, 0, true);
+                cv.setUint16(10, 0, true);
+                cv.setUint16(12, 0, true);
+                cv.setUint16(14, 0, true);
+                cv.setUint32(16, crc, true);
+                cv.setUint32(20, size, true);
+                cv.setUint32(24, size, true);
+                cv.setUint16(28, nameBytes.length, true);
+                cv.setUint16(30, 0, true);
+                cv.setUint16(32, 0, true);
+                cv.setUint16(34, 0, true);
+                cv.setUint16(36, 0, true);
+                cv.setUint32(38, 0, true);
+                cv.setUint32(42, offset, true);
+                ch.set(nameBytes, 46);
+                central.push(ch);
+                offset += lh.length + size;
+            });
+            let cdSize = 0;
+            central.forEach(c => { cdSize += c.length; });
+            const eocd = new Uint8Array(22);
+            const ev = new DataView(eocd.buffer);
+            ev.setUint32(0, 0x06054b50, true);
+            ev.setUint16(4, 0, true);
+            ev.setUint16(6, 0, true);
+            ev.setUint16(8, files.length, true);
+            ev.setUint16(10, files.length, true);
+            ev.setUint32(12, cdSize, true);
+            ev.setUint32(16, offset, true);
+            ev.setUint16(20, 0, true);
+            const all = chunks.concat(central, [eocd]);
+            let total = 0;
+            all.forEach(a => { total += a.length; });
+            const out = new Uint8Array(total);
+            let p = 0;
+            all.forEach(a => { out.set(a, p); p += a.length; });
+            return out;
+        }
+
+        function _xmlEsc(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function _colLetter(n) {
+            let s = '';
+            while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); }
+            return s;
+        }
+
+        function _sheetXml(rows) {
+            let x = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+            rows.forEach((row, ri) => {
+                x += '<row r="' + (ri + 1) + '">';
+                row.forEach((val, ci) => {
+                    const ref = _colLetter(ci + 1) + (ri + 1);
+                    const style = ri === 0 ? ' s="1"' : '';
+                    if (typeof val === 'number' && isFinite(val)) {
+                        x += '<c r="' + ref + '"' + style + '><v>' + val + '</v></c>';
+                    } else {
+                        const s = (val === null || val === undefined) ? '' : String(val);
+                        if (s === '') x += '<c r="' + ref + '"' + style + '/>';
+                        else x += '<c r="' + ref + '"' + style + ' t="inlineStr"><is><t xml:space="preserve">' + _xmlEsc(s) + '</t></is></c>';
+                    }
+                });
+                x += '</row>';
+            });
+            x += '</sheetData></worksheet>';
+            return x;
+        }
+
+        function _xlsx(sheets) {
+            const enc = new TextEncoder();
+            const files = [];
+            const n = sheets.length;
+            let ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+                '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+                '<Default Extension="xml" ContentType="application/xml"/>' +
+                '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+                '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>';
+            for (let i = 1; i <= n; i++) ct += '<Override PartName="/xl/worksheets/sheet' + i + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
+            ct += '</Types>';
+            files.push({ name: '[Content_Types].xml', data: enc.encode(ct) });
+            files.push({ name: '_rels/.rels', data: enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>') });
+            let wb = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>';
+            sheets.forEach((s, i) => { wb += '<sheet name="' + _xmlEsc(s.name) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>'; });
+            wb += '</sheets></workbook>';
+            files.push({ name: 'xl/workbook.xml', data: enc.encode(wb) });
+            let rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
+            sheets.forEach((s, i) => { rels += '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>'; });
+            rels += '<Relationship Id="rId' + (n + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+            files.push({ name: 'xl/_rels/workbook.xml.rels', data: enc.encode(rels) });
+            const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs></styleSheet>';
+            files.push({ name: 'xl/styles.xml', data: enc.encode(styles) });
+            sheets.forEach((s, i) => { files.push({ name: 'xl/worksheets/sheet' + (i + 1) + '.xml', data: enc.encode(_sheetXml(s.rows)) }); });
+            return _zip(files);
+        }
+
+        function exportToXlsx() {
+            try {
+                const r = exportRows();
+                const bytes = _xlsx([{ name: 'Resumen', rows: r.resumen }, { name: 'Detalle', rows: r.detalle }]);
+                _download(new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'Reporte_ADA3_Provision_Directa.xlsx');
+                showToast('Reporte Excel descargado.');
+            } catch (e) { showToast('Error al generar Excel: ' + e.message); }
+        }
+
+</script>
+</body>
+</html>
