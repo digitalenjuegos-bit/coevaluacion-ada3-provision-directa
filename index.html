@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Economia IB Nivel Medio - ADA 3: Provision directa de servicios</title>
+    <title>Economia IB Nivel Medio - ADA 3: Provisión directa de servicios</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-database-compat.js"></script>
@@ -28,39 +28,39 @@
         <header class="border-b-2 border-blue-800 pb-4 mb-4 flex justify-between items-center flex-wrap gap-4 bg-blue-50/50 p-4 rounded-t-lg">
             <div>
                 <h1 class="text-3xl font-bold text-blue-900">Economia IB Nivel Medio &middot; 2BGU</h1>
-                <p class="text-lg text-gray-700 font-semibold">ADA 3: Provision directa de servicios</p>
+                <p class="text-lg text-gray-700 font-semibold">ADA 3: Provisión directa de servicios</p>
             </div>
             <div id="statsBar" class="hidden text-right text-sm bg-white p-2 rounded-lg border border-blue-200 shadow-sm">
                 <span class="font-bold text-blue-800" id="statEvals">0 coevaluaciones</span><br>
-                <span class="text-xs text-gray-500">Prom: <b id="statProm">N/A</b> | Max: <b id="statMax">N/A</b> | Min: <b id="statMin">N/A</b></span>
+                <span class="text-xs text-gray-500">Prom: <b id="statProm">N/A</b> | Máx: <b id="statMax">N/A</b> | Mín: <b id="statMin">N/A</b></span>
             </div>
         </header>
 
         <div class="flex border-b mb-4 flex-wrap gap-1">
-            <button onclick="showTab(1)" class="px-4 py-2 bg-blue-600 text-white rounded-t-md tab-btn active" id="tab1-btn">Introduccion</button>
-            <button onclick="showTab(2)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-t-md ml-2 tab-btn" id="tab2-btn">Coevaluacion</button>
+            <button onclick="showTab(1)" class="px-4 py-2 bg-blue-600 text-white rounded-t-md tab-btn active" id="tab1-btn">Introducción</button>
+            <button onclick="showTab(2)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-t-md ml-2 tab-btn" id="tab2-btn">Coevaluación</button>
             <button onclick="showTab(3)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-t-md ml-2 tab-btn" id="tab3-btn">Mi nota</button>
         </div>
 
-        <!-- PESTANA 1: INTRODUCCION -->
+        <!-- PESTANA 1: INTRODUCCIÓN -->
         <div id="tab1" class="tab-content active">
             <div class="prose max-w-none">
-                <h2 class="text-2xl font-semibold text-blue-800">PROVISION DIRECTA DE SERVICIOS</h2>
-                <p class="italic text-gray-600">Que gana y que pierde cada parte interesada cuando el Estado produce directamente un bien de merito o un bien publico?</p>
-                <p>En esta ADA estudiaste las formas de intervencion del gobierno en los mercados. La <b>provision directa</b> es la intervencion en la que el Estado produce o entrega el bien o servicio, en lugar de dejar que lo haga el sector privado. Trabajaron en cuatro casos: la salud publica y la educacion publica como bienes de merito, los bienes publicos puros y el problema del polizon, y los servicios publicos que no son gratuitos para el usuario.</p>
-                <p>Ahora, como cierre, cada equipo presenta su <b>infografia y exposicion</b> y tu participas como <b>coevaluador</b>: valoraras el trabajo de los demas equipos con la rubrica de esta actividad, dentro de un marco de respeto, objetividad, equilibrio, escucha activa y etica. La coevaluacion no es critica destructiva: es una oportunidad para brindar retroalimentacion constructiva a tus companeros.</p>
+                <h2 class="text-2xl font-semibold text-blue-800">PROVISIÓN DIRECTA DE SERVICIOS</h2>
+                <p class="italic text-gray-600">¿Qué gana y qué pierde cada parte interesada cuando el Estado produce directamente un bien de mérito o un bien público?</p>
+                <p>En esta ADA estudiaste las formas de intervención del gobierno en los mercados. La <b>provisión directa</b> es la intervención en la que el Estado produce o entrega el bien o servicio, en lugar de dejar que lo haga el sector privado. Trabajaron en cuatro casos: la salud pública y la educación pública como bienes de mérito, los bienes públicos puros y el problema del polizón, y los servicios públicos que no son gratuitos para el usuario.</p>
+                <p>Ahora, como cierre, cada equipo presenta su <b>infografía y exposición</b> y tú participas como <b>coevaluador</b>: valorarás el trabajo de los demás equipos con la rúbrica de esta actividad, dentro de un marco de respeto, objetividad, equilibrio, escucha activa y ética. La coevaluación no es crítica destructiva: es una oportunidad para brindar retroalimentación constructiva a tus compañeros.</p>
 
                 <div class="bg-blue-50 p-4 rounded-md border border-blue-200 mt-4">
-                    <h3 class="text-xl font-semibold text-blue-800">Rubrica de Coevaluacion (sobre 10 puntos)</h3>
-                    <p class="font-mono bg-white p-2 rounded mt-2 text-center text-lg">Nota /10 = (aporte + preparacion + claridad + respeto) x 10 / 12, redondeada</p>
+                    <h3 class="text-xl font-semibold text-blue-800">Rúbrica de Coevaluación (sobre 10 puntos)</h3>
+                    <p class="font-mono bg-white p-2 rounded mt-2 text-center text-lg">Nota /10 = (aporte + preparación + claridad + respeto) x 10 / 12, redondeada</p>
                     <ul class="list-disc pl-5 mt-2 text-sm">
-                        <li><b>Aporte al grupo (3 pts):</b> contribuyo con ideas, trabajo y responsabilidad al producto del equipo.</li>
-                        <li><b>Preparacion (3 pts):</b> domino el tema y llego listo para la exposicion.</li>
-                        <li><b>Claridad de la exposicion (3 pts):</b> explico con palabras propias, con orden y precision.</li>
-                        <li><b>Respeto y colaboracion (3 pts):</b> escucho, respeto y ayudo a sus companeros durante todo el trabajo.</li>
-                        <li><b>Regla:</b> al seleccionar el equipo, calificas a <b>cada integrante de forma individual</b> (una nota por companero). No puedes evaluar a tu propio equipo.</li>
+                        <li><b>Aporte al grupo (3 pts):</b> contribuyó con ideas, trabajo y responsabilidad al producto del equipo.</li>
+                        <li><b>Preparación (3 pts):</b> dominó el tema y llegó listo para la exposición.</li>
+                        <li><b>Claridad de la exposición (3 pts):</b> explicó con palabras propias, con orden y precisión.</li>
+                        <li><b>Respeto y colaboración (3 pts):</b> escuchó, respetó y ayudó a sus compañeros durante todo el trabajo.</li>
+                        <li><b>Regla:</b> al seleccionar el equipo, calificas a <b>cada integrante de forma individual</b> (una nota por compañero). No puedes evaluar a tu propio equipo.</li>
                         <li><b>Colores de Nota Final:</b>
-                            <span class="bg-green-100 text-green-800 px-2 rounded ml-1">Verde (7 o mas)</span>,
+                            <span class="bg-green-100 text-green-800 px-2 rounded ml-1">Verde (7 o más)</span>,
                             <span class="bg-blue-100 text-blue-800 px-2 rounded ml-1">Azul (6)</span>,
                             <span class="bg-red-100 text-red-800 px-2 rounded ml-1">Rojo (menos de 6)</span>.
                         </li>
@@ -69,9 +69,9 @@
             </div>
 
             <div class="mt-8 pt-6 border-t border-gray-200">
-                <button onclick="toggleTeacherAccess()" class="text-sm text-gray-500 hover:text-blue-600">Acceso Docente / Configuracion</button>
+                <button onclick="toggleTeacherAccess()" class="text-sm text-gray-500 hover:text-blue-600">Acceso Docente / Configuración</button>
                 <div id="teacher-login" class="hidden mt-2 p-4 bg-gray-50 rounded-md border inline-block">
-                    <label class="block text-sm font-medium text-gray-700">Contrasena:</label>
+                    <label class="block text-sm font-medium text-gray-700">Contraseña:</label>
                     <input type="password" id="passwordInput" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" onkeydown="if(event.key==='Enter'){authenticateTeacher();}">
                     <button onclick="authenticateTeacher()" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">Ingresar</button>
                 </div>
@@ -79,8 +79,8 @@
 
             <!-- PANEL DOCENTE -->
             <div id="teacher-panel" class="hidden mt-8 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
-                <h3 class="text-xl font-bold text-blue-900 mb-4">Panel de Administracion Docente</h3>
-                <p class="text-sm text-gray-600 mb-4">Curso unico 2BGU, cuatro grupos. Nota final = <b id="pesoHeader">100% rubrica docente / 0% coevaluacion</b>.</p>
+                <h3 class="text-xl font-bold text-blue-900 mb-4">Panel de Administración Docente</h3>
+                <p class="text-sm text-gray-600 mb-4">Curso único 2BGU, cuatro grupos. Nota final = <b id="pesoHeader">100% rúbrica docente / 0% coevaluación</b>.</p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div class="p-4 bg-white rounded border">
@@ -90,11 +90,11 @@
                     </div>
                     <div class="p-4 bg-white rounded border">
                         <h4 class="font-semibold mb-1">2. Peso de la nota final</h4>
-                        <p class="text-xs text-gray-500 mb-2">Nota Final = Nota ADA x <b id="pesoDocLabel">100</b>% + Nota Coevaluacion x <b id="pesoCoevalLabel">0</b>%. Por defecto la nota final reproduce exactamente la rubrica docente.</p>
+                        <p class="text-xs text-gray-500 mb-2">Nota Final = Nota ADA x <b id="pesoDocLabel">100</b>% + Nota Coevaluación x <b id="pesoCoevalLabel">0</b>%. Por defecto la nota final reproduce exactamente la rúbrica docente.</p>
                         <div class="flex items-center gap-3 flex-wrap">
                             <label class="text-sm">% Docente:</label>
                             <input id="pesoDocenteInput" type="number" min="0" max="100" value="100" class="border rounded px-2 py-1 w-20 text-sm" oninput="pesoPreview()">
-                            <span class="text-sm text-gray-500">% Coevaluacion: <b id="pesoCoevalPreview">0</b>%</span>
+                            <span class="text-sm text-gray-500">% Coevaluación: <b id="pesoCoevalPreview">0</b>%</span>
                             <button onclick="guardarPesos()" class="bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-bold hover:bg-blue-800">Guardar pesos</button>
                             <span id="pesoStatus" class="text-xs text-gray-500"></span>
                         </div>
@@ -104,18 +104,18 @@
                 <!-- GESTION DE EQUIPOS -->
                 <div class="mb-6 p-4 bg-white rounded border">
                     <h4 class="font-semibold mb-1">3. Gestion de Equipos (parametrizable)</h4>
-                    <p class="text-xs text-gray-500 mb-3">Si los alumnos forman nuevos grupos, editalos aqui y presiona <b>Guardar equipos en la nube</b>: se aplican al instante en los dispositivos. Las notas ya registradas no se pierden (estan ligadas al estudiante, no al grupo).</p>
+                    <p class="text-xs text-gray-500 mb-3">Si los alumnos forman nuevos grupos, edítalos aquí y presiona <b>Guardar equipos en la nube</b>: se aplican al instante en los dispositivos. Las notas ya registradas no se pierden (están ligadas al estudiante, no al grupo).</p>
                     <div class="flex flex-wrap gap-4 items-end mb-4">
                         <div>
                             <label class="block text-xs font-medium">N. de Equipos (1-12)</label>
                             <input type="number" id="numTeams" min="1" max="12" value="4" class="w-24 px-2 py-1 border rounded">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium">Max. integrantes por equipo</label>
+                            <label class="block text-xs font-medium">Máx. integrantes por equipo</label>
                             <input type="number" id="numMembers" min="1" max="8" value="4" class="w-24 px-2 py-1 border rounded">
                         </div>
                         <button onclick="editorGenerateTeams()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">Generar Estructura</button>
-                        <button onclick="editorRandomAssign()" class="bg-purple-600 text-white px-4 py-1.5 rounded text-sm hover:bg-purple-700">Asignacion Aleatoria</button>
+                        <button onclick="editorRandomAssign()" class="bg-purple-600 text-white px-4 py-1.5 rounded text-sm hover:bg-purple-700">Asignación Aleatoria</button>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                         <div>
@@ -134,10 +134,10 @@
                     </div>
                 </div>
 
-                <!-- MODULO 1: RUBRICA DOCENTE -->
+                <!-- MODULO 1: RÚBRICA DOCENTE -->
                 <div class="mb-6 p-4 bg-white rounded border">
-                    <h4 class="font-semibold mb-1">4. Evaluacion Docente (rubrica oficial de la ADA 3)</h4>
-                    <p class="text-xs text-gray-500 mb-3">Bloque grupal: B Terminologia (max 2) y C Aplicacion y analisis (max 3), igual para los 4 integrantes. Bloque individual: D Concepto clave (max 3), E Evaluacion (max 3) y llamados de atencion por lectura. Nota ADA = (B + C + D + E) / 11 x 10 menos el descuento por lectura; nunca menor que 0.</p>
+                    <h4 class="font-semibold mb-1">4. Evaluación Docente (rúbrica oficial de la ADA 3)</h4>
+                    <p class="text-xs text-gray-500 mb-3">Bloque grupal: B Terminología (máx 2) y C Aplicación y análisis (máx 3), igual para los 4 integrantes. Bloque individual: D Concepto clave (máx 3), E Evaluación (máx 3) y llamados de atención por lectura. Nota ADA = (B + C + D + E) / 11 x 10 menos el descuento por lectura; nunca menor que 0.</p>
                     <div id="docenteRubricaArea" class="text-sm"></div>
                 </div>
 
@@ -150,8 +150,8 @@
                             <button onclick="exportToCSV()" class="bg-green-700 text-white px-3 py-1 rounded text-sm font-bold hover:bg-green-800">Descargar CSV</button>
                         </div>
                     </div>
-                    <div id="participationCounter" class="inline-block text-sm font-semibold text-blue-800 bg-blue-50 border border-blue-200 rounded px-3 py-1 mb-2">Participacion: cargando...</div>
-                    <p class="text-xs text-gray-500 mb-3">Cada fila es un estudiante. <b>Nota Final</b> = Nota ADA x <span id="pesoDocRep">100</span>% + Nota Coevaluacion x <span id="pesoCoeRep">0</span>%. Mientras falte una de las dos partes, la nota final queda como pendiente de esa parte.</p>
+                    <div id="participationCounter" class="inline-block text-sm font-semibold text-blue-800 bg-blue-50 border border-blue-200 rounded px-3 py-1 mb-2">Participación: cargando...</div>
+                    <p class="text-xs text-gray-500 mb-3">Cada fila es un estudiante. <b>Nota Final</b> = Nota ADA x <span id="pesoDocRep">100</span>% + Nota Coevaluación x <span id="pesoCoeRep">0</span>%. Mientras falte una de las dos partes, la nota final queda como pendiente de esa parte.</p>
                     <div class="overflow-x-auto mb-4">
                         <table class="w-full text-sm border-collapse">
                             <thead>
@@ -167,7 +167,7 @@
                                     <th class="border p-2 text-center">Nota ADA</th>
                                     <th class="border p-2 text-center">Nota Coeval</th>
                                     <th class="border p-2 text-center">Nota Final</th>
-                                    <th class="border p-2 text-left" style="min-width:280px">Retroalimentacion</th>
+                                    <th class="border p-2 text-left" style="min-width:280px">Retroalimentación</th>
                                 </tr>
                             </thead>
                             <tbody id="liveGradesBody">
@@ -181,16 +181,16 @@
                     </div>
                     <div class="border-t pt-4 mt-4 flex gap-4 items-center flex-wrap">
                         <button onclick="clearCloudData(this)" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 font-medium text-sm">Borrar TODAS las coevaluaciones (nube)</button>
-                        <span class="text-xs text-gray-500">Accion con doble clic de confirmacion. No borra las notas del docente.</span>
+                        <span class="text-xs text-gray-500">Acción con doble clic de confirmación. No borra las notas del docente.</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- PESTANA 2: VISTA DEL ALUMNO (COEVALUACION) -->
+        <!-- PESTANA 2: VISTA DEL ALUMNO (COEVALUACIÓN) -->
         <div id="tab2" class="tab-content">
-            <h2 class="text-2xl font-semibold text-blue-800 mb-4">Coevaluacion de la infografia y la exposicion</h2>
-            <p class="text-sm text-gray-600 mb-4">Evalua a los integrantes de los otros grupos. No puedes evaluar a tu propio equipo. Si vuelves a evaluar a un companero, tu nota anterior se reemplaza.</p>
+            <h2 class="text-2xl font-semibold text-blue-800 mb-4">Coevaluación de la infografía y la exposición</h2>
+            <p class="text-sm text-gray-600 mb-4">Evalúa a los integrantes de los otros grupos. No puedes evaluar a tu propio equipo. Si vuelves a evaluar a un compañero, tu nota anterior se reemplaza.</p>
 
             <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
                 <label class="block text-sm font-bold text-gray-700">Paso 1: Selecciona tu nombre (Evaluador)</label>
@@ -223,12 +223,12 @@
                 </select>
             </div>
             <div id="consultaArea" class="mt-4">
-                <p class="text-gray-500 text-sm">Selecciona tu nombre para consultar tu nota de la ADA 3, tu promedio de coevaluacion y tu nota final.</p>
+                <p class="text-gray-500 text-sm">Selecciona tu nombre para consultar tu nota de la ADA 3, tu promedio de coevaluación y tu nota final.</p>
             </div>
         </div>
 
         <footer class="mt-10 pt-6 border-t border-gray-200 text-center text-xs text-gray-500">
-            <p>2026 Mr. Alberto Ottati R. Todos los derechos reservados. Cualquier manipulacion o uso indebido de esta rubrica sera debidamente penalizada.</p>
+            <p>2026 Mr. Alberto Ottati R. Todos los derechos reservados. Cualquier manipulación o uso indebido de esta rúbrica será debidamente penalizada.</p>
         </footer>
     </div>
 
@@ -262,68 +262,68 @@
         } catch (e) { console.error("Error inicializando Firebase:", e); }
 
 
-        // --- RUBRICA DE COEVALUACION (4 criterios x /3 = total /12, se normaliza a /10) ---
+        // --- RÚBRICA DE COEVALUACIÓN (4 criterios x /3 = total /12, se normaliza a /10) ---
         const coevalRubric = [
             { key: 'c1', title: 'Aporte al grupo', levels: [
-                { pts: 3, label: 'Excelente', text: 'Aporto ideas y trabajo de forma constante y asumio su parte con responsabilidad.' },
-                { pts: 2, label: 'Bueno', text: 'Aporto lo necesario, aunque pudo comprometerse mas con el producto final.' },
-                { pts: 1, label: 'Limitado', text: 'Aporto poco al trabajo del equipo.' },
+                { pts: 3, label: 'Excelente', text: 'Aportó ideas y trabajo de forma constante y asumió su parte con responsabilidad.' },
+                { pts: 2, label: 'Bueno', text: 'Aportó lo necesario, aunque pudo comprometerse más con el producto final.' },
+                { pts: 1, label: 'Limitado', text: 'Aportó poco al trabajo del equipo.' },
                 { pts: 0, label: 'No evidencia', text: 'No se evidencia aporte al trabajo del equipo.' }
             ]},
-            { key: 'c2', title: 'Preparacion', levels: [
-                { pts: 3, label: 'Excelente', text: 'Domino el tema y llego preparado con todo lo necesario.' },
-                { pts: 2, label: 'Bueno', text: 'Conocia el tema, aunque con algunas lagunas en su parte.' },
-                { pts: 1, label: 'Limitado', text: 'Llego con poca preparacion del tema asignado.' },
-                { pts: 0, label: 'No evidencia', text: 'No se evidencia preparacion del tema.' }
+            { key: 'c2', title: 'Preparación', levels: [
+                { pts: 3, label: 'Excelente', text: 'Dominó el tema y llegó preparado con todo lo necesario.' },
+                { pts: 2, label: 'Bueno', text: 'Conocía el tema, aunque con algunas lagunas en su parte.' },
+                { pts: 1, label: 'Limitado', text: 'Llegó con poca preparación del tema asignado.' },
+                { pts: 0, label: 'No evidencia', text: 'No se evidencia preparación del tema.' }
             ]},
-            { key: 'c3', title: 'Claridad de la exposicion', levels: [
-                { pts: 3, label: 'Excelente', text: 'Explico con palabras propias, con orden y precision.' },
-                { pts: 2, label: 'Bueno', text: 'Explico de forma comprensible, con algunos titubeos.' },
-                { pts: 1, label: 'Limitado', text: 'Su explicacion fue confusa o leyo casi todo.' },
-                { pts: 0, label: 'No evidencia', text: 'No se comprende su explicacion.' }
+            { key: 'c3', title: 'Claridad de la exposición', levels: [
+                { pts: 3, label: 'Excelente', text: 'Explicó con palabras propias, con orden y precisión.' },
+                { pts: 2, label: 'Bueno', text: 'Explicó de forma comprensible, con algunos titubeos.' },
+                { pts: 1, label: 'Limitado', text: 'Su explicación fue confusa o leyó casi todo.' },
+                { pts: 0, label: 'No evidencia', text: 'No se comprende su explicación.' }
             ]},
-            { key: 'c4', title: 'Respeto y colaboracion', levels: [
-                { pts: 3, label: 'Excelente', text: 'Escucho, respeto y ayudo a sus companeros durante todo el trabajo.' },
+            { key: 'c4', title: 'Respeto y colaboración', levels: [
+                { pts: 3, label: 'Excelente', text: 'Escuchó, respetó y ayudó a sus compañeros durante todo el trabajo.' },
                 { pts: 2, label: 'Bueno', text: 'Mantuvo una actitud respetuosa y colaborativa.' },
-                { pts: 1, label: 'Limitado', text: 'Mostro poca colaboracion o disposicion con el equipo.' },
-                { pts: 0, label: 'No evidencia', text: 'No respeto ni colaboro con el equipo.' }
+                { pts: 1, label: 'Limitado', text: 'Mostró poca colaboración o disposición con el equipo.' },
+                { pts: 0, label: 'No evidencia', text: 'No respetó ni colaboró con el equipo.' }
             ]}
         ];
 
-        // --- RUBRICA OFICIAL DEL DOCENTE (ADA 3: provision directa) ---
-        // Bloque GRUPAL: B Terminologia (max 2), C Aplicacion y analisis (max 3).
-        const RUB_B = { id: 'B', max: 2, name: 'B. Terminologia', levels: [
-            { v: 2, color: 'green', text: 'Usa apropiadamente la terminologia de la intervencion (provision directa, reglamentacion de mando y control, bien de merito, bien publico, polizon, bien de demerito, fallo de gobierno, partes interesadas) en todos los bloques.' },
-            { v: 1, color: 'blue', text: 'Terminos pertinentes con imprecisiones, aislados o en un solo bloque.' },
+        // --- RÚBRICA OFICIAL DEL DOCENTE (ADA 3: provisión directa) ---
+        // Bloque GRUPAL: B Terminología (máx 2), C Aplicación y análisis (máx 3).
+        const RUB_B = { id: 'B', max: 2, name: 'B. Terminología', levels: [
+            { v: 2, color: 'green', text: 'Usa apropiadamente la terminología de la intervención (provisión directa, reglamentación de mando y control, bien de mérito, bien público, polizón, bien de demérito, fallo de gobierno, partes interesadas) en todos los bloques.' },
+            { v: 1, color: 'blue', text: 'Términos pertinentes con imprecisiones, aislados o en un solo bloque.' },
             { v: 0, color: 'red', text: 'No alcanza el 1.' }
         ]};
-        const RUB_C = { id: 'C', max: 3, name: 'C. Aplicacion y analisis', levels: [
-            { v: 3, color: 'green', text: 'Aplica con eficacia la teoria de la intervencion al ejemplo: explica la falla de mercado, como cambian el precio que paga el usuario, la cantidad consumida o producida y el papel del sector privado; y analiza con datos verificables que gana y pierde cada parte interesada.' },
-            { v: 2, color: 'blue', text: 'Analisis adecuado pero omite una parte interesada, un efecto sobre el mercado o el respaldo con datos.' },
-            { v: 1, color: 'red', text: 'Describe la medida y efectos generales; analisis limitado.' },
+        const RUB_C = { id: 'C', max: 3, name: 'C. Aplicación y análisis', levels: [
+            { v: 3, color: 'green', text: 'Aplica con eficacia la teoría de la intervención al ejemplo: explica la falla de mercado, cómo cambian el precio que paga el usuario, la cantidad consumida o producida y el papel del sector privado; y analiza con datos verificables qué gana y pierde cada parte interesada.' },
+            { v: 2, color: 'blue', text: 'Análisis adecuado pero omite una parte interesada, un efecto sobre el mercado o el respaldo con datos.' },
+            { v: 1, color: 'red', text: 'Describe la medida y efectos generales; análisis limitado.' },
             { v: 0, color: 'red', text: 'No alcanza el 1.' }
         ]};
-        // Bloque INDIVIDUAL: D Concepto clave (max 3), E Evaluacion (max 3).
-        const RUB_D = { id: 'D', max: 3, name: 'D. Concepto clave', nota: 'Conceptos admitidos: intervencion, equidad, bienestar economico, eficiencia o sostenibilidad.', levels: [
-            { v: 3, color: 'green', text: 'Identifica un concepto y explica con sus palabras, de forma completa, como da sentido al caso (de la razon de la medida a su juicio final).' },
-            { v: 2, color: 'blue', text: 'Lo identifica y explica parcialmente su relacion.' },
-            { v: 1, color: 'red', text: 'Lo identifica e intenta vincularlo sin explicar la relacion.' },
+        // Bloque INDIVIDUAL: D Concepto clave (máx 3), E Evaluación (máx 3).
+        const RUB_D = { id: 'D', max: 3, name: 'D. Concepto clave', nota: 'Conceptos admitidos: intervención, equidad, bienestar económico, eficiencia o sostenibilidad.', levels: [
+            { v: 3, color: 'green', text: 'Identifica un concepto y explica con sus palabras, de forma completa, cómo da sentido al caso (de la razón de la medida a su juicio final).' },
+            { v: 2, color: 'blue', text: 'Lo identifica y explica parcialmente su relación.' },
+            { v: 1, color: 'red', text: 'Lo identifica e intenta vincularlo sin explicar la relación.' },
             { v: 0, color: 'red', text: 'No identifica o no alcanza el 1.' }
         ]};
-        const RUB_E = { id: 'E', max: 3, name: 'E. Evaluacion', levels: [
-            { v: 3, color: 'green', text: 'Formula juicio final fundamentado sobre mantener, ajustar o reemplazar: sopesa costos y beneficios para distintas partes interesadas, distingue corto y largo plazo y responde a la perspectiva contraria u otra forma de intervencion.' },
+        const RUB_E = { id: 'E', max: 3, name: 'E. Evaluación', levels: [
+            { v: 3, color: 'green', text: 'Formula juicio final fundamentado sobre mantener, ajustar o reemplazar: sopesa costos y beneficios para distintas partes interesadas, distingue corto y largo plazo y responde a la perspectiva contraria u otra forma de intervención.' },
             { v: 2, color: 'blue', text: 'Juicio con razonamiento adecuado pero una sola perspectiva o sin distinguir corto y largo plazo.' },
-            { v: 1, color: 'red', text: 'Opinion con razonamiento limitado o sin evidencia.' },
+            { v: 1, color: 'red', text: 'Opinión con razonamiento limitado o sin evidencia.' },
             { v: 0, color: 'red', text: 'No alcanza el 1.' }
         ]};
         const NOTA_MAX = 11; // B(2) + C(3) + D(3) + E(3)
 
         // --- GRUPOS (hardcoded; un solo curso 2BGU) ---
         const GROUPS = [
-            { id: 'G1', topic: 'Bienes de merito: la salud publica', members: ['Alejandro Granda', 'Vicente Chalen', 'Martin Murillo', 'Emmanuel Molano'] },
-            { id: 'G2', topic: 'Bienes de merito: la educacion publica', members: ['Juan Martin Romero', 'Ivanna Guerrero', 'Camila Aspiazu', 'Sebastian Ortiz'] },
-            { id: 'G3', topic: 'Bienes publicos puros y el problema del polizon', members: ['JuanJose Campuzano', 'Gianella Alban', 'Mateo De La Cruz', 'Domenica Tamayo'] },
-            { id: 'G4', topic: 'Servicios publicos que no son gratuitos', members: ['Jacinto Flor', 'Adrian Mendiburo', 'Valeria Vizhnay', 'Mathias Martinez'] }
+            { id: 'G1', topic: 'Bienes de mérito: la salud pública', members: ['Alejandro Granda', 'Vicente Chalen', 'Martin Murillo', 'Emmanuel Molano'] },
+            { id: 'G2', topic: 'Bienes de mérito: la educación pública', members: ['Juan Martin Romero', 'Ivanna Guerrero', 'Camila Aspiazu', 'Sebastian Ortiz'] },
+            { id: 'G3', topic: 'Bienes públicos puros y el problema del polizón', members: ['JuanJose Campuzano', 'Gianella Alban', 'Mateo De La Cruz', 'Domenica Tamayo'] },
+            { id: 'G4', topic: 'Servicios públicos que no son gratuitos', members: ['Jacinto Flor', 'Adrian Mendiburo', 'Valeria Vizhnay', 'Mathias Martinez'] }
         ];
         const ROSTER = GROUPS.reduce((acc, g) => acc.concat(g.members), []);
         const DEFAULT_TEAMS = JSON.parse(JSON.stringify(GROUPS));
@@ -391,7 +391,7 @@
                     const pdr = document.getElementById('pesoDocRep'); if (pdr) pdr.textContent = dPct;
                     const pcr = document.getElementById('pesoCoeRep'); if (pcr) pcr.textContent = cPct;
                     const pcp = document.getElementById('pesoCoevalPreview'); if (pcp) pcp.textContent = cPct;
-                    const ph = document.getElementById('pesoHeader'); if (ph) ph.textContent = dPct + '% rubrica docente / ' + cPct + '% coevaluacion';
+                    const ph = document.getElementById('pesoHeader'); if (ph) ph.textContent = dPct + '% rúbrica docente / ' + cPct + '% coevaluación';
                 });
                 db.ref(TEAMS_NODE).on('value', snap => {
                     const d = snap.val();
@@ -429,11 +429,11 @@
                 document.getElementById('teacher-panel').classList.remove('hidden');
                 document.getElementById('statsBar').classList.remove('hidden');
                 renderLiveGrades(); renderEvalLogList(); updateStats(); renderTeamEditor(); renderDocenteRubrica();
-            } else { showToast('Contrasena incorrecta.'); }
+            } else { showToast('Contraseña incorrecta.'); }
         }
 
         async function toggleEvaluations() {
-            if (!db) { showToast('Sin conexion a la nube.'); return; }
+            if (!db) { showToast('Sin conexión a la nube.'); return; }
             try {
                 await db.ref(LOCK_NODE).set(!evaluationsActive);
                 showToast(!evaluationsActive ? 'Evaluaciones Activadas (todos los dispositivos)' : 'Evaluaciones Cerradas (todos los dispositivos)');
@@ -457,7 +457,7 @@
             document.getElementById('pesoCoevalPreview').textContent = co;
         }
         async function guardarPesos() {
-            if (!db) { showToast('Sin conexion a la nube.'); return; }
+            if (!db) { showToast('Sin conexión a la nube.'); return; }
             let d = parseInt(document.getElementById('pesoDocenteInput').value, 10);
             if (isNaN(d) || d < 0 || d > 100) { showToast('El porcentaje del docente debe estar entre 0 y 100.'); return; }
             const c = 100 - d;
@@ -470,9 +470,9 @@
                 document.getElementById('pesoCoevalLabel').textContent = c;
                 document.getElementById('pesoDocRep').textContent = d;
                 document.getElementById('pesoCoeRep').textContent = c;
-                document.getElementById('pesoHeader').textContent = d + '% rubrica docente / ' + c + '% coevaluacion';
+                document.getElementById('pesoHeader').textContent = d + '% rúbrica docente / ' + c + '% coevaluación';
                 if (st) st.textContent = 'Pesos: ' + d + '% / ' + c + '%';
-                showToast('Pesos guardados: docente ' + d + '% / coevaluacion ' + c + '%');
+                showToast('Pesos guardados: docente ' + d + '% / coevaluación ' + c + '%');
                 renderLiveGrades();
             } catch (e) { if (st) st.textContent = 'Error: ' + e.message; }
         }
@@ -501,7 +501,7 @@
         function editorGenerateTeams() {
             const n = parseInt(document.getElementById('numTeams').value, 10) || 0;
             const max = parseInt(document.getElementById('numMembers').value, 10) || 0;
-            if (n <= 0 || max <= 0) { showToast('Ingrese un numero valido de equipos e integrantes.'); return; }
+            if (n <= 0 || max <= 0) { showToast('Ingrese un número válido de equipos e integrantes.'); return; }
             const prev = editorData();
             const out = [];
             for (let i = 0; i < n; i++) {
@@ -512,7 +512,7 @@
             }
             teams = out;
             renderTeamEditor();
-            showToast('Estructura de ' + n + ' equipos generada (aun no se guarda en la nube).');
+            showToast('Estructura de ' + n + ' equipos generada (aún no se guarda en la nube).');
         }
 
         function editorRandomAssign() {
@@ -532,7 +532,7 @@
                 if (!placed) t[0].members.push(s);
             });
             renderTeamEditor();
-            showToast('Asignacion aleatoria aplicada (aun no se guarda en la nube).');
+            showToast('Asignación aleatoria aplicada (aún no se guarda en la nube).');
         }
 
         function editorRemoveFromTeam(encName, teamIndex) {
@@ -579,7 +579,7 @@
 
         async function saveTeamsToCloud() {
             try {
-                if (!db) throw new Error('Sin conexion a la nube.');
+                if (!db) throw new Error('Sin conexión a la nube.');
                 await db.ref(TEAMS_NODE).set({ teams: editorData() });
                 document.getElementById('teamsCloudStatus').textContent = 'Guardado en la nube el ' + new Date().toLocaleTimeString('es-EC');
                 showToast('Equipos guardados en la nube.');
@@ -587,7 +587,7 @@
         }
 
         async function resetTeamsToDefault(btn) {
-            if (!armButton(btn, 'Confirmar restaurar equipos?')) return;
+            if (!armButton(btn, '¿Confirmar restaurar equipos?')) return;
             btn.textContent = btn.dataset.origText;
             btn.classList.remove('ring-2', 'ring-red-300');
             teams = JSON.parse(JSON.stringify(DEFAULT_TEAMS)).map(t => { t.maxMembers = 4; return t; });
@@ -596,7 +596,7 @@
         }
 
 
-        // --- COEVALUACION: FLUJO DEL ALUMNO ---
+        // --- COEVALUACIÓN: FLUJO DEL ALUMNO ---
         function renderEvaluators() {
             const select = document.getElementById('evaluator');
             if (!select) return;
@@ -676,7 +676,7 @@
                         '<input type="hidden" id="score-' + c.key + '-' + sid + '" value=""></div>';
                 }).join('');
                 const prevBanner = prev ?
-                    '<div class="p-2 mb-2 bg-amber-50 border border-amber-300 rounded text-xs text-amber-800">Ya evaluaste a este companero (nota: <b>' + prev.nota + '/10</b>). Si guardas de nuevo, se <b>reemplaza</b>.</div>' : '';
+                    '<div class="p-2 mb-2 bg-amber-50 border border-amber-300 rounded text-xs text-amber-800">Ya evaluaste a este compañero (nota: <b>' + prev.nota + '/10</b>). Si guardas de nuevo, se <b>reemplaza</b>.</div>' : '';
                 return '<div class="border rounded-lg p-3 mb-3 bg-white">' +
                     '<div class="flex justify-between items-center mb-2"><h4 class="font-bold text-gray-800">' + shortName(member) + '</h4>' +
                     '<span class="px-3 py-1 rounded-full text-sm ' + (prev ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500') + '">' + (prev ? prev.nota + '/10' : 'Pendiente') + '</span></div>' +
@@ -737,7 +737,7 @@
                 const saveBtn = document.getElementById('saveBtn-' + sid);
                 if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Guardando...'; saveBtn.classList.add('opacity-50', 'cursor-not-allowed'); }
 
-                if (!db) throw new Error('No hay conexion con la base de datos (Firebase no cargo).');
+                if (!db) throw new Error('No hay conexión con la base de datos (Firebase no cargo).');
 
                 const logKey = safeKey(team.id) + '__' + safeKey(evaluator) + '__' + sid;
                 const payload = { grupoId: team.id, grupoLabel: groupLabel(team.id), evaluator: evaluator, evaluated: member, criterios: criterios, nota: nota, timestamp: new Date().toLocaleString('es-EC') };
@@ -765,7 +765,7 @@
         // B y C: grupales (misma nota para los integrantes del grupo)
         // D, E y llamados: individuales
         // Nota ADA = (B + C + D + E) / 11 * 10 - descuento por lectura, piso 0
-        // Descuento por lectura: 1er llamado 0, 2do llamado 1, 3er llamado o mas 2
+        // Descuento por lectura: 1er llamado 0, 2do llamado 1, 3er llamado o más 2
         // ============================================================
 
         function llamadosDescuento(n) {
@@ -801,41 +801,41 @@
             return out;
         }
 
-        // --- RETROALIMENTACION AUTOMATICA ---
+        // --- RETROALIMENTACIÓN AUTOMATICA ---
         function buildFeedback(B, C, D, E, llamados, nADA, coev, nFinal) {
-            if (nADA === null) return 'Aun no hay nota del docente para este estudiante.';
+            if (nADA === null) return 'Aún no hay nota del docente para este estudiante.';
             const partes = [];
             const crits = [
-                { val: B, max: 2, aspecto: 'el uso de la terminologia de la intervencion', tip: 'usar los terminos economicos en todos los bloques de la infografia, no solo en el titulo' },
-                { val: C, max: 3, aspecto: 'la aplicacion y el analisis del caso', tip: 'explicar como cambia el mercado y que gana y pierde cada parte interesada, con datos verificables' },
-                { val: D, max: 3, aspecto: 'el concepto clave', tip: 'explicar con sus palabras como el concepto clave da sentido al caso, desde la razon de la medida hasta el juicio final' },
-                { val: E, max: 3, aspecto: 'la evaluacion final', tip: 'cerrar con un juicio fundamentado sobre mantener, ajustar o reemplazar la medida, distinguiendo el corto y el largo plazo' }
+                { val: B, max: 2, aspecto: 'el uso de la terminología de la intervención', tip: 'usar los términos economicos en todos los bloques de la infografía, no solo en el titulo' },
+                { val: C, max: 3, aspecto: 'la aplicación y el análisis del caso', tip: 'explicar cómo cambia el mercado y qué gana y pierde cada parte interesada, con datos verificables' },
+                { val: D, max: 3, aspecto: 'el concepto clave', tip: 'explicar con sus palabras cómo el concepto clave da sentido al caso, desde la razón de la medida hasta el juicio final' },
+                { val: E, max: 3, aspecto: 'la evaluación final', tip: 'cerrar con un juicio fundamentado sobre mantener, ajustar o reemplazar la medida, distinguiendo el corto y el largo plazo' }
             ];
             if (nADA >= 7) {
-                partes.push('Felicitaciones: su trabajo alcanzo ' + nADA.toFixed(1) + ' sobre diez en la rubrica de la ADA.');
+                partes.push('Felicitaciones: su trabajo alcanzó ' + nADA.toFixed(1) + ' sobre diez en la rúbrica de la ADA.');
             } else {
                 const bajos = crits.filter(c => typeof c.val === 'number' && c.val / c.max < 0.7)
                     .sort((a, b) => (a.val / a.max) - (b.val / b.max));
                 partes.push('Su nota de la ADA fue ' + nADA.toFixed(1) + ' sobre diez, por debajo de siete.');
                 if (bajos.length === 0) {
-                    partes.push('Ningun criterio quedo muy bajo, pero conviene sostener el trabajo con mas evidencia y precision.');
+                    partes.push('Ningún criterio quedó muy bajo, pero conviene sostener el trabajo con más evidencia y precisión.');
                 } else {
-                    partes.push('La principal oportunidad de mejora esta en ' + bajos[0].aspecto + ': conviene ' + bajos[0].tip + '.');
-                    if (bajos.length > 1) partes.push('Tambien conviene reforzar ' + bajos[1].aspecto + ': ' + bajos[1].tip + '.');
+                    partes.push('La principal oportunidad de mejora está en ' + bajos[0].aspecto + ': conviene ' + bajos[0].tip + '.');
+                    if (bajos.length > 1) partes.push('También conviene reforzar ' + bajos[1].aspecto + ': ' + bajos[1].tip + '.');
                 }
             }
             if (typeof llamados === 'number' && llamados >= 2) {
                 const desc = llamadosDescuento(llamados);
                 const descTxt = (desc === 1) ? '1 punto' : desc + ' puntos';
-                partes.push('Se registro lectura del material durante la exposicion (' + llamados + ' llamados), con un descuento de ' + descTxt + ' en la nota individual.');
+                partes.push('Se registró lectura del material durante la exposición (' + llamados + ' llamados), con un descuento de ' + descTxt + ' en la nota individual.');
             }
             if (coev !== null) {
-                partes.push('Sus companeros lo coevaluaron con ' + coev.toFixed(1) + ' sobre diez en promedio.');
+                partes.push('Sus compañeros lo coevaluaron con ' + coev.toFixed(1) + ' sobre diez en promedio.');
             }
             return partes.join(' ');
         }
 
-        // --- RUBRICA DOCENTE (por estudiante) ---
+        // --- RÚBRICA DOCENTE (por estudiante) ---
         let docEvalTemp = {};
 
         function docInitFromCloud(gid) {
@@ -903,17 +903,17 @@
             html += '<div class="p-3 bg-gray-50 rounded border mb-3">' +
                 '<h5 class="text-sm font-bold text-gray-700 mb-2">Bloque grupal (misma nota para los integrantes del grupo)</h5>' +
                 '<div class="flex flex-wrap gap-4">' +
-                '<div><label class="block text-xs font-medium">B. Terminologia (max 2)</label>' +
+                '<div><label class="block text-xs font-medium">B. Terminología (máx 2)</label>' +
                 '<select onchange="docSetBC(\'' + gid + '\',\'B\',this.value)" class="border rounded px-2 py-1 text-sm">' + selOpts(2, t.B) + '</select></div>' +
-                '<div><label class="block text-xs font-medium">C. Aplicacion y analisis (max 3)</label>' +
+                '<div><label class="block text-xs font-medium">C. Aplicación y análisis (máx 3)</label>' +
                 '<select onchange="docSetBC(\'' + gid + '\',\'C\',this.value)" class="border rounded px-2 py-1 text-sm">' + selOpts(3, t.C) + '</select></div>' +
                 '</div></div>';
 
             html += '<div class="overflow-x-auto"><table class="w-full border-collapse text-xs">' +
                 '<thead><tr class="bg-blue-100 text-blue-800">' +
                 '<th class="border p-2 text-left">Estudiante</th>' +
-                '<th class="border p-2 text-center">D. Concepto clave (max 3)</th>' +
-                '<th class="border p-2 text-center">E. Evaluacion (max 3)</th>' +
+                '<th class="border p-2 text-center">D. Concepto clave (máx 3)</th>' +
+                '<th class="border p-2 text-center">E. Evaluación (máx 3)</th>' +
                 '<th class="border p-2 text-center">Llamados por lectura</th>' +
                 '<th class="border p-2 text-center">Descuento</th>' +
                 '<th class="border p-2 text-center">Nota ADA</th></tr></thead><tbody>';
@@ -937,7 +937,7 @@
             html += '</tbody></table></div>';
 
             html += '<div class="mt-3 flex flex-wrap items-center gap-3">' +
-                '<button onclick="docGuardarGrupo(\'' + gid + '\')" class="bg-green-700 text-white px-5 py-2 rounded font-bold text-sm hover:bg-green-800">Guardar evaluacion del grupo</button>' +
+                '<button onclick="docGuardarGrupo(\'' + gid + '\')" class="bg-green-700 text-white px-5 py-2 rounded font-bold text-sm hover:bg-green-800">Guardar evaluación del grupo</button>' +
                 '<button onclick="docBorrarGrupo(this)" class="bg-red-500 text-white px-4 py-2 rounded text-sm hover:bg-red-600">Borrar notas del grupo</button>' +
                 '<span id="docSaveStatus" class="text-xs text-gray-500"></span></div>';
 
@@ -945,7 +945,7 @@
         }
 
         async function docGuardarGrupo(gid) {
-            if (!db) { showToast('Sin conexion a la nube.'); return; }
+            if (!db) { showToast('Sin conexión a la nube.'); return; }
             const t = docEvalTemp[gid];
             const g = teams.find(x => x.id === gid);
             if (!t || !g) return;
@@ -972,13 +972,13 @@
                 });
                 await db.ref(DOCENTE_NODE).update(updates);
                 if (st) st.textContent = 'Guardado ' + new Date().toLocaleTimeString('es-EC');
-                showToast('Evaluacion del ' + groupLabel(gid) + ' guardada.');
+                showToast('Evaluación del ' + groupLabel(gid) + ' guardada.');
             } catch (e) { if (st) st.textContent = 'Error: ' + e.message; }
         }
 
         async function docBorrarGrupo(btn) {
-            if (!db) { showToast('Sin conexion a la nube.'); return; }
-            if (!armButton(btn, 'Confirmar borrar notas del grupo?')) return;
+            if (!db) { showToast('Sin conexión a la nube.'); return; }
+            if (!armButton(btn, '¿Confirmar borrar notas del grupo?')) return;
             btn.textContent = btn.dataset.origText;
             btn.classList.remove('ring-2', 'ring-red-300');
             const gid = document.getElementById('docGrupoSelect') ? document.getElementById('docGrupoSelect').value : null;
@@ -1038,19 +1038,19 @@
             const container = document.getElementById('evalLogList');
             if (!container) return;
             if (allLogs.length === 0) {
-                container.innerHTML = '<p class="text-gray-400 text-sm p-2 text-center">No hay registros de coevaluacion.</p>';
+                container.innerHTML = '<p class="text-gray-400 text-sm p-2 text-center">No hay registros de coevaluación.</p>';
                 return;
             }
             container.innerHTML = allLogs.map(log =>
                 '<div class="flex justify-between items-center text-xs p-2 border-l-4 border-red-300 bg-white rounded shadow-sm">' +
-                '<div class="flex-1 mr-2"><strong class="text-gray-800">' + shortName(log.evaluator) + '</strong> evaluo a <strong class="text-gray-800">' + shortName(log.evaluated) + '</strong> (' + (log.grupoLabel || '') + ')<br>' +
+                '<div class="flex-1 mr-2"><strong class="text-gray-800">' + shortName(log.evaluator) + '</strong> evaluó a <strong class="text-gray-800">' + shortName(log.evaluated) + '</strong> (' + (log.grupoLabel || '') + ')<br>' +
                 '<span class="text-gray-500">Nota: ' + log.nota + '/10 | ' + (log.timestamp || '') + '</span></div>' +
                 '<button onclick="deleteEvalLog(\'' + log.grupoId + '\',\'' + log.logId + '\', this)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 font-bold whitespace-nowrap">Eliminar</button></div>'
             ).join('');
         }
 
         async function deleteEvalLog(grupoId, logId, btn) {
-            if (!db) { showToast('Sin conexion a la nube.'); return; }
+            if (!db) { showToast('Sin conexión a la nube.'); return; }
             if (btn && btn.dataset.armed !== '1') {
                 btn.dataset.armed = '1';
                 btn.textContent = 'Confirmar?';
@@ -1087,7 +1087,7 @@
             const pc = document.getElementById('participationCounter');
             if (pc) {
                 const evals = new Set(allLogs.map(l => l.evaluator));
-                pc.textContent = 'Participacion: ' + evals.size + ' de ' + ROSTER.length + ' estudiantes han coevaluado';
+                pc.textContent = 'Participación: ' + evals.size + ' de ' + ROSTER.length + ' estudiantes han coevaluado';
             }
         }
 
@@ -1098,7 +1098,7 @@
             const sel = document.getElementById('consultaEvaluador');
             const student = sel ? sel.value : '';
             if (!student) {
-                area.innerHTML = '<p class="text-gray-500 text-sm">Selecciona tu nombre para consultar tu nota de la ADA 3, tu promedio de coevaluacion y tu nota final.</p>';
+                area.innerHTML = '<p class="text-gray-500 text-sm">Selecciona tu nombre para consultar tu nota de la ADA 3, tu promedio de coevaluación y tu nota final.</p>';
                 return;
             }
             const k = safeKey(student);
@@ -1120,14 +1120,14 @@
             area.innerHTML = '<div class="p-4 bg-white rounded border max-w-2xl">' +
                 '<h3 class="font-bold text-blue-900 text-lg mb-2">' + shortName(student) + '</h3>' +
                 row('Grupo', g ? groupLabel(g.id) : 'Sin grupo') +
-                row('B. Terminologia (grupal, max 2)', B !== null ? B : 'Pendiente') +
-                row('C. Aplicacion y analisis (grupal, max 3)', C !== null ? C : 'Pendiente') +
+                row('B. Terminología (grupal, max 2)', B !== null ? B : 'Pendiente') +
+                row('C. Aplicación y análisis (grupal, max 3)', C !== null ? C : 'Pendiente') +
                 row('D. Concepto clave (individual, max 3)', D !== null ? D : 'Pendiente') +
-                row('E. Evaluacion (individual, max 3)', E !== null ? E : 'Pendiente') +
+                row('E. Evaluación (individual, max 3)', E !== null ? E : 'Pendiente') +
                 row('Llamados por lectura', L !== null ? L : 'Pendiente') +
                 row('Descuento por lectura', desc === null ? 'Pendiente' : (desc === 0 ? 'Sin descuento' : '-' + desc + (desc === 1 ? ' punto' : ' puntos'))) +
                 row('Nota de la ADA', nADA !== null ? nADA.toFixed(1) + ' / 10' : 'Pendiente') +
-                row('Nota de coevaluacion (' + nCoev + (nCoev === 1 ? ' evaluacion)' : ' evaluaciones)'), coev !== null ? coev.toFixed(1) + ' / 10' : 'Pendiente') +
+                row('Nota de coevaluación (' + nCoev + (nCoev === 1 ? ' evaluación)' : ' evaluaciones)'), coev !== null ? coev.toFixed(1) + ' / 10' : 'Pendiente') +
                 '<div class="flex justify-between py-2 mt-1"><span class="font-bold">Nota final</span><span class="font-bold text-xl ' + color + '">' + (nFinal !== null ? nFinal.toFixed(1) + ' / 10' : 'Pendiente') + '</span></div>' +
                 '<div class="mt-3 p-3 bg-blue-50 rounded border border-blue-200 text-sm text-gray-700">' + fb + '</div>' +
                 '</div>';
@@ -1135,8 +1135,8 @@
 
         // --- BORRADO MASIVO DE COEVALUACIONES ---
         async function clearCloudData(btn) {
-            if (!db) { showToast('Sin conexion a la nube.'); return; }
-            if (!armButton(btn, 'SEGURO? Borra TODAS las coevaluaciones - click de nuevo')) return;
+            if (!db) { showToast('Sin conexión a la nube.'); return; }
+            if (!armButton(btn, '¿SEGURO? Borra TODAS las coevaluaciones - click de nuevo')) return;
             try {
                 btn.disabled = true; btn.textContent = 'Borrando...';
                 await db.ref(DB_NODE).remove();
@@ -1153,7 +1153,7 @@
         // --- EXPORTACION ---
         function exportRows() {
             const list = orderedRoster();
-            const resumen = [['Estudiante', 'Grupo', 'B', 'C', 'D', 'E', 'Llamados', 'Descuento', 'Nota ADA', 'Nota Coeval', 'Nota Final', 'Retroalimentacion']];
+            const resumen = [['Estudiante', 'Grupo', 'B', 'C', 'D', 'E', 'Llamados', 'Descuento', 'Nota ADA', 'Nota Coeval', 'Nota Final', 'Retroalimentación']];
             list.forEach(student => {
                 const k = safeKey(student);
                 const s = docenteScores[k] || {};
@@ -1178,7 +1178,7 @@
                     nFinal !== null ? nFinal.toFixed(1) : '', fb
                 ]);
             });
-            const detalle = [['Evaluador', 'Estudiante evaluado', 'Grupo', 'Aporte', 'Preparacion', 'Claridad', 'Respeto', 'Nota /10', 'Fecha']];
+            const detalle = [['Evaluador', 'Estudiante evaluado', 'Grupo', 'Aporte', 'Preparación', 'Claridad', 'Respeto', 'Nota /10', 'Fecha']];
             allLogs.forEach(l => {
                 const c = l.criterios || {};
                 detalle.push([
