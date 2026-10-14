@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(160deg, #eef2ff 0%, #f8fafc 45%, #ecfeff 100%); min-height: 100vh; }
         .glass-panel { background-color: rgba(255,255,255,0.96); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
@@ -21,6 +22,26 @@
         .lv-green { border-color: #86efac; background-color: #f0fdf4; }
         .lv-blue { border-color: #93c5fd; background-color: #eff6ff; }
         .lv-red { border-color: #fca5a5; background-color: #fef2f2; }
+        .informe-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 9998; overflow-y: auto; padding: 20px; }
+        .informe-toolbar { position: sticky; top: 0; background: #ffffff; padding: 10px; border-radius: 8px; display: flex; gap: 10px; flex-wrap: wrap; margin: 0 auto 12px; max-width: 800px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .informe-print { background: #ffffff; max-width: 800px; margin: 0 auto; padding: 32px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.25); }
+        .informe-print h2 { font-size: 20px; font-weight: bold; color: #1e3a8a; margin-bottom: 2px; }
+        .informe-print .sub { color: #4b5563; font-size: 13px; margin-bottom: 16px; }
+        .informe-print .stu { font-size: 16px; margin-bottom: 12px; }
+        .informe-print table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }
+        .informe-print td { border: 1px solid #d1d5db; padding: 6px 8px; }
+        .informe-print td.lbl { color: #374151; }
+        .informe-print td.val { font-weight: bold; text-align: right; }
+        .informe-print h3 { font-size: 15px; font-weight: bold; margin: 12px 0 6px; color: #1e3a8a; }
+        .informe-print .fb { font-size: 13px; line-height: 1.5; color: #374151; }
+        .informe-print .pie { margin-top: 24px; font-size: 11px; color: #6b7280; }
+        @media print {
+            body * { visibility: hidden !important; }
+            .informe-overlay { position: absolute !important; inset: auto !important; left: 0 !important; top: 0 !important; width: 100% !important; background: #ffffff !important; padding: 0 !important; overflow: visible !important; }
+            .informe-toolbar { display: none !important; }
+            .informe-print, .informe-print * { visibility: visible !important; }
+            .informe-print { box-shadow: none !important; margin: 0 !important; padding: 0 !important; max-width: 100% !important; }
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -39,7 +60,7 @@
         <div class="flex border-b mb-4 flex-wrap gap-1">
             <button onclick="showTab(1)" class="px-4 py-2 bg-blue-600 text-white rounded-t-md tab-btn active" id="tab1-btn">Introducción</button>
             <button onclick="showTab(2)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-t-md ml-2 tab-btn" id="tab2-btn">Coevaluación</button>
-            <button onclick="showTab(3)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-t-md ml-2 tab-btn" id="tab3-btn">Mi nota</button>
+            <button onclick="showTab(3)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-t-md ml-2 tab-btn" id="tab3-btn">Mi informe</button>
         </div>
 
         <!-- PESTANA 1: INTRODUCCIÓN -->
@@ -80,7 +101,7 @@
             <!-- PANEL DOCENTE -->
             <div id="teacher-panel" class="hidden mt-8 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
                 <h3 class="text-xl font-bold text-blue-900 mb-4">Panel de Administración Docente</h3>
-                <p class="text-sm text-gray-600 mb-4">Curso único 2BGU, cuatro grupos. Nota final = <b id="pesoHeader">100% rúbrica docente / 0% coevaluación</b>.</p>
+                <p class="text-sm text-gray-600 mb-4">Curso único 2BGU, cuatro grupos. Nota final = <b id="pesoHeader">70% rúbrica docente / 30% coevaluación</b>.</p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div class="p-4 bg-white rounded border">
@@ -90,11 +111,11 @@
                     </div>
                     <div class="p-4 bg-white rounded border">
                         <h4 class="font-semibold mb-1">2. Peso de la nota final</h4>
-                        <p class="text-xs text-gray-500 mb-2">Nota Final = Nota ADA x <b id="pesoDocLabel">100</b>% + Nota Coevaluación x <b id="pesoCoevalLabel">0</b>%. Por defecto la nota final reproduce exactamente la rúbrica docente.</p>
+                        <p class="text-xs text-gray-500 mb-2">Nota Final = Nota ADA x <b id="pesoDocLabel">70</b>% + Nota Coevaluación x <b id="pesoCoevalLabel">30</b>%. Valor por defecto 70% docente / 30% coevaluación; se guarda en la nube al presionar Guardar pesos.</p>
                         <div class="flex items-center gap-3 flex-wrap">
                             <label class="text-sm">% Docente:</label>
-                            <input id="pesoDocenteInput" type="number" min="0" max="100" value="100" class="border rounded px-2 py-1 w-20 text-sm" oninput="pesoPreview()">
-                            <span class="text-sm text-gray-500">% Coevaluación: <b id="pesoCoevalPreview">0</b>%</span>
+                            <input id="pesoDocenteInput" type="number" min="0" max="100" value="70" class="border rounded px-2 py-1 w-20 text-sm" oninput="pesoPreview()">
+                            <span class="text-sm text-gray-500">% Coevaluación: <b id="pesoCoevalPreview">30</b>%</span>
                             <button onclick="guardarPesos()" class="bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-bold hover:bg-blue-800">Guardar pesos</button>
                             <span id="pesoStatus" class="text-xs text-gray-500"></span>
                         </div>
@@ -141,17 +162,31 @@
                     <div id="docenteRubricaArea" class="text-sm"></div>
                 </div>
 
+                <!-- MODULO 5: CÓDIGOS DE ACCESO AL INFORME DEL ALUMNO -->
+                <div class="mb-6 p-4 bg-white rounded border">
+                    <h4 class="font-semibold mb-1">5. Códigos de acceso al informe del alumno</h4>
+                    <p class="text-xs text-gray-500 mb-3">Cada alumno entra a la pestaña <b>Mi informe</b> con su nombre y su código personal. El informe se puede ver <b>una sola vez</b>; puedes restablecer la vista si tuvo un problema técnico. Copia el código o el texto del correo y envíaselo al alumno. Los códigos no se muestran en la pestaña del alumno.</p>
+                    <div class="flex flex-wrap gap-3 items-center mb-3">
+                        <button onclick="ensureCodigos()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">Generar códigos faltantes</button>
+                        <button onclick="resetAllViews(this)" class="bg-red-500 text-white px-4 py-1.5 rounded text-sm hover:bg-red-600">Restablecer todas las vistas</button>
+                        <span id="codigosStatus" class="text-xs text-gray-500"></span>
+                    </div>
+                    <div id="codigosPanel" class="overflow-x-auto">
+                        <p class="text-gray-400 text-sm p-2 text-center">Cargando códigos...</p>
+                    </div>
+                </div>
+
                 <!-- RESUMEN POR ESTUDIANTE -->
                 <div class="mb-6 p-4 bg-white rounded border">
                     <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
-                        <h4 class="font-semibold">5. Resumen por estudiante (en vivo)</h4>
+                        <h4 class="font-semibold">6. Resumen por estudiante (en vivo)</h4>
                         <div class="flex gap-2">
                             <button onclick="exportToXlsx()" class="bg-emerald-700 text-white px-3 py-1 rounded text-sm font-bold hover:bg-emerald-800">Descargar Excel (.xlsx)</button>
                             <button onclick="exportToCSV()" class="bg-green-700 text-white px-3 py-1 rounded text-sm font-bold hover:bg-green-800">Descargar CSV</button>
                         </div>
                     </div>
                     <div id="participationCounter" class="inline-block text-sm font-semibold text-blue-800 bg-blue-50 border border-blue-200 rounded px-3 py-1 mb-2">Participación: cargando...</div>
-                    <p class="text-xs text-gray-500 mb-3">Cada fila es un estudiante. <b>Nota Final</b> = Nota ADA x <span id="pesoDocRep">100</span>% + Nota Coevaluación x <span id="pesoCoeRep">0</span>%. Mientras falte una de las dos partes, la nota final queda como pendiente de esa parte.</p>
+                    <p class="text-xs text-gray-500 mb-3">Cada fila es un estudiante. <b>Nota Final</b> = Nota ADA x <span id="pesoDocRep">70</span>% + Nota Coevaluación x <span id="pesoCoeRep">30</span>%. Mientras falte una de las dos partes, la nota final queda como pendiente de esa parte.</p>
                     <div class="overflow-x-auto mb-4">
                         <table class="w-full text-sm border-collapse">
                             <thead>
@@ -213,17 +248,23 @@
             </div>
         </div>
 
-        <!-- PESTANA 3: MI NOTA -->
+        <!-- PESTANA 3: MI INFORME -->
         <div id="tab3" class="tab-content">
-            <h2 class="text-2xl font-semibold text-blue-800 mb-4">Consulta de mi nota</h2>
+            <h2 class="text-2xl font-semibold text-blue-800 mb-4">Mi informe</h2>
             <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-                <label class="block text-sm font-bold text-gray-700">Selecciona tu nombre</label>
-                <select id="consultaEvaluador" onchange="renderConsulta()" class="mt-1 block w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white">
+                <label class="block text-sm font-bold text-gray-700">Tu nombre</label>
+                <select id="consultaEvaluador" class="mt-1 block w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white">
                     <option value="">Seleccione su nombre...</option>
                 </select>
+                <label class="block text-sm font-bold text-gray-700 mt-3">Tu código personal</label>
+                <input id="codigoInput" type="text" autocomplete="off" maxlength="6" placeholder="Escribe tu código"
+                    class="mt-1 block w-full md:w-1/3 px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white font-mono tracking-widest uppercase"
+                    onkeydown="if(event.key==='Enter'){verMiInforme();}">
+                <button onclick="verMiInforme()" id="verInformeBtn" class="mt-3 bg-blue-700 text-white px-6 py-2 rounded-lg font-bold text-sm hover:bg-blue-800 shadow-sm">Ver mi informe</button>
+                <p class="text-xs text-gray-500 mt-2">Tu código te lo entregó tu docente. Es personal, identifica tu informe y se puede usar una sola vez; no lo compartas con otros compañeros.</p>
             </div>
             <div id="consultaArea" class="mt-4">
-                <p class="text-gray-500 text-sm">Selecciona tu nombre para consultar tu nota de la ADA 3, tu promedio de coevaluación y tu nota final.</p>
+                <p class="text-gray-500 text-sm">Elige tu nombre, escribe tu código personal y presiona Ver mi informe.</p>
             </div>
         </div>
 
@@ -250,6 +291,8 @@
         const DB_NODE = 'evaluations_' + ACT;
         const DOCENTE_NODE = 'docente_' + ACT;
         const CONFIG_NODE = 'config_pesos_' + ACT;
+        const CODES_NODE = 'codigos_' + ACT;
+        const VIEWS_NODE = 'vistas_' + ACT;
         const LOCK_NODE = 'config_' + ACT + '/evaluationsActive';
         const TEAMS_NODE = 'teams_' + ACT;
 
@@ -332,7 +375,13 @@
         let evaluationsActive = true;
         let allLogs = [];          // [{ grupoId, logId, ...eval }]
         let docenteScores = {};    // { studentKey: {grupoId,B,C,D,E,llamados,descuento,notaADA,timestamp} }
-        let pesoDocente = 1.0, pesoCoeval = 0.0;
+        let pesoDocente = 0.7, pesoCoeval = 0.3;
+        let codigos = {};             // { studentKey: 'ABC123' }  (nodo codigos_<ACT>)
+        let vistas = {};              // { studentKey: { visto:true, ts } }  (nodo vistas_<ACT>)
+        let consultaUnlockedStudent = null; // alumno cuyo informe está abierto en ESTA sesión
+        let codigosLoaded = false;
+        let ensureCodigosBusy = false;
+        let informeActual = null;     // último informe construido (para la descarga)
 
         function showToast(msg) {
             const t = document.getElementById('toast');
@@ -393,6 +442,17 @@
                     const pcp = document.getElementById('pesoCoevalPreview'); if (pcp) pcp.textContent = cPct;
                     const ph = document.getElementById('pesoHeader'); if (ph) ph.textContent = dPct + '% rúbrica docente / ' + cPct + '% coevaluación';
                 });
+                db.ref(CODES_NODE).on('value', snap => {
+                    codigos = snap.val() || {};
+                    codigosLoaded = true;
+                    const panel = document.getElementById('teacher-panel');
+                    if (panel && !panel.classList.contains('hidden')) { ensureCodigos(); }
+                    renderCodigosPanel();
+                });
+                db.ref(VIEWS_NODE).on('value', snap => {
+                    vistas = snap.val() || {};
+                    renderCodigosPanel();
+                });
                 db.ref(TEAMS_NODE).on('value', snap => {
                     const d = snap.val();
                     if (d && Array.isArray(d.teams) && d.teams.length > 0) {
@@ -420,7 +480,27 @@
             btn.classList.add('active', 'bg-blue-600', 'text-white');
             btn.classList.remove('bg-gray-200', 'text-gray-700');
             if (i === 2) handleEvaluatorChange();
-            if (i === 3) renderConsulta();
+            if (i === 3) { renderConsulta(); } else { resetConsultaState(); }
+        }
+
+        // El informe abierto se cierra al abandonar la pestaña, al pulsar "Cerrar informe"
+        // y por inactividad: así un segundo alumno en el mismo equipo no ve el informe del primero.
+        let consultaIdleTimer = null;
+        function armConsultaIdleLock() {
+            if (consultaIdleTimer) clearTimeout(consultaIdleTimer);
+            consultaIdleTimer = setTimeout(function () {
+                if (consultaUnlockedStudent) {
+                    resetConsultaState();
+                    showToast('El informe se cerró por inactividad.');
+                }
+            }, 15 * 60 * 1000);
+        }
+        function resetConsultaState() {
+            if (consultaIdleTimer) { clearTimeout(consultaIdleTimer); consultaIdleTimer = null; }
+            consultaUnlockedStudent = null;
+            const ci = document.getElementById('codigoInput');
+            if (ci) ci.value = '';
+            renderConsulta();
         }
 
         function toggleTeacherAccess() { document.getElementById('teacher-login').classList.toggle('hidden'); }
@@ -429,6 +509,8 @@
                 document.getElementById('teacher-panel').classList.remove('hidden');
                 document.getElementById('statsBar').classList.remove('hidden');
                 renderLiveGrades(); renderEvalLogList(); updateStats(); renderTeamEditor(); renderDocenteRubrica();
+                renderCodigosPanel();
+                if (codigosLoaded) ensureCodigos();
             } else { showToast('Contraseña incorrecta.'); }
         }
 
@@ -1091,16 +1173,8 @@
             }
         }
 
-        // --- CONSULTA DE MI NOTA ---
-        function renderConsulta() {
-            const area = document.getElementById('consultaArea');
-            if (!area) return;
-            const sel = document.getElementById('consultaEvaluador');
-            const student = sel ? sel.value : '';
-            if (!student) {
-                area.innerHTML = '<p class="text-gray-500 text-sm">Selecciona tu nombre para consultar tu nota de la ADA 3, tu promedio de coevaluación y tu nota final.</p>';
-                return;
-            }
+        // --- CONSULTA DE MI INFORME (acceso por nombre + código; una vista por alumno) ---
+        function buildReport(student) {
             const k = safeKey(student);
             const s = docenteScores[k] || {};
             const g = findGroupOf(student);
@@ -1115,22 +1189,36 @@
             const nFinal = calcNotaFinal(nADA, coev);
             const fb = buildFeedback(B, C, D, E, L, nADA, coev, nFinal);
             const nCoev = allLogs.filter(l => l.evaluated === student).length;
-            const color = nFinal === null ? 'text-gray-500' : (nFinal >= 7 ? 'text-green-700' : (nFinal >= 6 ? 'text-blue-700' : 'text-red-700'));
+            return { student: student, grupo: g ? groupLabel(g.id) : 'Sin grupo', B: B, C: C, D: D, E: E, L: L, desc: desc, nADA: nADA, coev: coev, nFinal: nFinal, fb: fb, nCoev: nCoev };
+        }
+
+        function renderConsulta() {
+            const area = document.getElementById('consultaArea');
+            if (!area) return;
+            if (!consultaUnlockedStudent) {
+                area.innerHTML = '<p class="text-gray-500 text-sm">Elige tu nombre, escribe tu código personal y presiona Ver mi informe.</p>';
+                return;
+            }
+            const r = buildReport(consultaUnlockedStudent);
+            const color = r.nFinal === null ? 'text-gray-500' : (r.nFinal >= 7 ? 'text-green-700' : (r.nFinal >= 6 ? 'text-blue-700' : 'text-red-700'));
             const row = (label, val) => '<div class="flex justify-between border-b py-1"><span class="text-gray-600">' + label + '</span><span class="font-semibold">' + val + '</span></div>';
             area.innerHTML = '<div class="p-4 bg-white rounded border max-w-2xl">' +
-                '<h3 class="font-bold text-blue-900 text-lg mb-2">' + shortName(student) + '</h3>' +
-                row('Grupo', g ? groupLabel(g.id) : 'Sin grupo') +
-                row('B. Terminología (grupal, max 2)', B !== null ? B : 'Pendiente') +
-                row('C. Aplicación y análisis (grupal, max 3)', C !== null ? C : 'Pendiente') +
-                row('D. Concepto clave (individual, max 3)', D !== null ? D : 'Pendiente') +
-                row('E. Evaluación (individual, max 3)', E !== null ? E : 'Pendiente') +
-                row('Llamados por lectura', L !== null ? L : 'Pendiente') +
-                row('Descuento por lectura', desc === null ? 'Pendiente' : (desc === 0 ? 'Sin descuento' : '-' + desc + (desc === 1 ? ' punto' : ' puntos'))) +
-                row('Nota de la ADA', nADA !== null ? nADA.toFixed(1) + ' / 10' : 'Pendiente') +
-                row('Nota de coevaluación (' + nCoev + (nCoev === 1 ? ' evaluación)' : ' evaluaciones)'), coev !== null ? coev.toFixed(1) + ' / 10' : 'Pendiente') +
-                '<div class="flex justify-between py-2 mt-1"><span class="font-bold">Nota final</span><span class="font-bold text-xl ' + color + '">' + (nFinal !== null ? nFinal.toFixed(1) + ' / 10' : 'Pendiente') + '</span></div>' +
-                '<div class="mt-3 p-3 bg-blue-50 rounded border border-blue-200 text-sm text-gray-700">' + fb + '</div>' +
+                '<h3 class="font-bold text-blue-900 text-lg mb-2">' + shortName(r.student) + '</h3>' +
+                row('Grupo', r.grupo) +
+                row('B. Terminología (grupal, max 2)', r.B !== null ? r.B : 'Pendiente') +
+                row('C. Aplicación y análisis (grupal, max 3)', r.C !== null ? r.C : 'Pendiente') +
+                row('D. Concepto clave (individual, max 3)', r.D !== null ? r.D : 'Pendiente') +
+                row('E. Evaluación (individual, max 3)', r.E !== null ? r.E : 'Pendiente') +
+                row('Llamados por lectura', r.L !== null ? r.L : 'Pendiente') +
+                row('Descuento por lectura', r.desc === null ? 'Pendiente' : (r.desc === 0 ? 'Sin descuento' : '-' + r.desc + (r.desc === 1 ? ' punto' : ' puntos'))) +
+                row('Nota de la ADA', r.nADA !== null ? r.nADA.toFixed(1) + ' / 10' : 'Pendiente') +
+                row('Nota de coevaluación (' + r.nCoev + (r.nCoev === 1 ? ' evaluación)' : ' evaluaciones)'), r.coev !== null ? r.coev.toFixed(1) + ' / 10' : 'Pendiente') +
+                '<div class="flex justify-between py-2 mt-1"><span class="font-bold">Nota final</span><span class="font-bold text-xl ' + color + '">' + (r.nFinal !== null ? r.nFinal.toFixed(1) + ' / 10' : 'Pendiente') + '</span></div>' +
+                '<div class="mt-3 p-3 bg-blue-50 rounded border border-blue-200 text-sm text-gray-700">' + r.fb + '</div>' +
+                '<div class="mt-4 flex flex-wrap gap-2"><button onclick="descargarInforme()" class="bg-blue-700 text-white px-5 py-2 rounded font-bold text-sm hover:bg-blue-800">Descargar informe</button>' +
+                '<button onclick="resetConsultaState()" class="bg-gray-200 text-gray-800 px-5 py-2 rounded font-bold text-sm hover:bg-gray-300">Cerrar informe</button></div>' +
                 '</div>';
+            armConsultaIdleLock();
         }
 
         // --- BORRADO MASIVO DE COEVALUACIONES ---
@@ -1362,6 +1450,316 @@
                 _download(new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'Reporte_ADA3_Provision_Directa.xlsx');
                 showToast('Reporte Excel descargado.');
             } catch (e) { showToast('Error al generar Excel: ' + e.message); }
+        }
+
+        // ============================================================
+        // ACCESO AL INFORME POR CÓDIGO, UNA VISTA POR ALUMNO Y CÓDIGOS DOCENTES
+        // ============================================================
+        const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sin 0, O, 1, I
+
+        function genCode() {
+            let s = '';
+            for (let i = 0; i < 6; i++) s += CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)];
+            return s;
+        }
+        function codigoDe(student) { return codigos[safeKey(student)] || ''; }
+
+        async function ensureCodigos() {
+            if (!db || !codigosLoaded || ensureCodigosBusy) { renderCodigosPanel(); return; }
+            const missing = orderedRoster().filter(st => !codigos[safeKey(st)]);
+            if (missing.length === 0) { renderCodigosPanel(); return; }
+            ensureCodigosBusy = true;
+            const updates = {};
+            missing.forEach(st => { const k = safeKey(st); codigos[k] = genCode(); updates[k] = codigos[k]; });
+            try {
+                await db.ref(CODES_NODE).update(updates);
+                showToast('Se generaron ' + missing.length + ' códigos nuevos.');
+            } catch (e) { console.error('Error guardando códigos:', e); showToast('Error al guardar códigos: ' + e.message); }
+            ensureCodigosBusy = false;
+            renderCodigosPanel();
+        }
+
+        function renderCodigosPanel() {
+            const box = document.getElementById('codigosPanel');
+            if (!box) return;
+            const list = orderedRoster();
+            if (list.length === 0) { box.innerHTML = '<p class="text-gray-400 text-sm p-2 text-center">No hay estudiantes.</p>'; return; }
+            box.innerHTML = '<table class="w-full text-xs border-collapse"><thead><tr class="bg-blue-100 text-blue-800">' +
+                '<th class="border p-2 text-left">Estudiante</th>' +
+                '<th class="border p-2 text-center">Código</th>' +
+                '<th class="border p-2 text-center">Vista usada</th>' +
+                '<th class="border p-2 text-center">Acciones</th></tr></thead><tbody>' +
+                list.map(st => {
+                    const k = safeKey(st);
+                    const code = codigos[k] || 'Sin generar';
+                    const visto = !!(vistas[k] && vistas[k].visto);
+                    const enc = encodeURIComponent(st);
+                    return '<tr>' +
+                        '<td class="border p-2">' + shortName(st) + '</td>' +
+                        '<td class="border p-2 text-center font-mono font-bold tracking-widest">' + code + '</td>' +
+                        '<td class="border p-2 text-center ' + (visto ? 'text-amber-700 font-bold' : 'text-gray-400') + '">' + (visto ? 'Sí' : 'No') + '</td>' +
+                        '<td class="border p-2 text-center"><div class="flex flex-wrap gap-1 justify-center">' +
+                        '<button onclick="copiarCodigo(\'' + enc + '\', this)" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-2 py-1 rounded">Copiar código</button>' +
+                        '<button onclick="regenerarCodigo(\'' + enc + '\', this)" class="bg-blue-600 text-white hover:bg-blue-700 px-2 py-1 rounded">Regenerar código</button>' +
+                        '<button onclick="resetVista(\'' + enc + '\', this)" class="bg-amber-500 text-white hover:bg-amber-600 px-2 py-1 rounded">Restablecer vista</button>' +
+                        '<button onclick="copiarCorreo(\'' + enc + '\', this)" class="bg-green-700 text-white hover:bg-green-800 px-2 py-1 rounded">Copiar texto del correo</button>' +
+                        '</div></td></tr>';
+                }).join('') + '</tbody></table>';
+        }
+
+        async function copyToClipboard(text) {
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(text); return true; }
+            } catch (e) { /* se intenta el respaldo */ }
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed'; ta.style.top = '-1000px'; ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.focus(); ta.select();
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                return ok;
+            } catch (e) { return false; }
+        }
+
+        async function copiarCodigo(enc, btn) {
+            const name = decodeURIComponent(enc);
+            const code = codigoDe(name);
+            if (!code) { showToast('Ese alumno aún no tiene código.'); return; }
+            const ok = await copyToClipboard(code);
+            showToast(ok ? ('Código copiado: ' + code) : ('No se pudo copiar. Código: ' + code));
+        }
+
+        async function regenerarCodigo(enc, btn) {
+            const name = decodeURIComponent(enc);
+            const k = safeKey(name);
+            if (!db) { showToast('Sin conexión a la nube.'); return; }
+            const nuevo = genCode();
+            try {
+                await db.ref(CODES_NODE + '/' + k).set(nuevo);
+                codigos[k] = nuevo;
+                renderCodigosPanel();
+                showToast('Código regenerado para ' + shortName(name) + '.');
+            } catch (e) { showToast('Error: ' + e.message); }
+        }
+
+        async function resetVista(enc, btn) {
+            const name = decodeURIComponent(enc);
+            const k = safeKey(name);
+            if (!db) { showToast('Sin conexión a la nube.'); return; }
+            try {
+                await db.ref(VIEWS_NODE + '/' + k).remove();
+                delete vistas[k];
+                renderCodigosPanel();
+                showToast('Acceso restablecido para ' + shortName(name) + '.');
+            } catch (e) { showToast('Error: ' + e.message); }
+        }
+
+        async function resetAllViews(btn) {
+            if (!db) { showToast('Sin conexión a la nube.'); return; }
+            if (!armButton(btn, '¿Confirmar restablecer TODAS las vistas?')) return;
+            btn.textContent = btn.dataset.origText;
+            btn.classList.remove('ring-2', 'ring-red-300');
+            try {
+                const updates = {};
+                orderedRoster().forEach(st => { updates[safeKey(st)] = null; });
+                await db.ref(VIEWS_NODE).update(updates);
+                vistas = {};
+                renderCodigosPanel();
+                showToast('Todas las vistas fueron restablecidas.');
+            } catch (e) { showToast('Error: ' + e.message); }
+        }
+
+        async function copiarCorreo(enc, btn) {
+            const name = decodeURIComponent(enc);
+            const code = codigoDe(name);
+            if (!code) { showToast('Ese alumno aún no tiene código.'); return; }
+            const asunto = 'Tu código personal para el informe de coevaluación (ADA 3, Economía 2 BGU)';
+            const cuerpo = 'Hola ' + shortName(name) + ': ya está disponible tu informe de retroalimentación de la ADA 3 "Provisión directa de servicios" (Economía, 2 BGU). Tu código personal es: ' + code + '. Para verlo: entra al app, abre la pestaña "Mi informe", elige tu nombre y escribe tu código. Ahí verás tu nota de la ADA, tu nota de coevaluación, tu nota final y la retroalimentación, y podrás descargar el informe en PDF. Este código es personal, identifica tu informe y se puede usar una sola vez; no lo compartas con otros compañeros. Saludos, Prof. Alberto Ottati';
+            const texto = 'Asunto: ' + asunto + '\n\n' + cuerpo;
+            const ok = await copyToClipboard(texto);
+            showToast(ok ? ('Texto del correo copiado para ' + shortName(name) + '.') : 'No se pudo copiar el texto.');
+        }
+
+        // --- VALIDACIÓN DE ACCESO AL INFORME DEL ALUMNO (nombre + código, una sola vista) ---
+        async function verMiInforme() {
+            const area = document.getElementById('consultaArea');
+            const sel = document.getElementById('consultaEvaluador');
+            const codeInput = document.getElementById('codigoInput');
+            const student = sel ? sel.value : '';
+            const code = codeInput ? codeInput.value.trim().toUpperCase() : '';
+            if (!area) return;
+            if (!student) { showToast('Elige tu nombre.'); return; }
+            if (!code) { showToast('Escribe tu código personal.'); return; }
+            if (consultaUnlockedStudent === student) { renderConsulta(); return; }
+            const k = safeKey(student);
+            const esperado = codigos[k] || '';
+            if (!esperado || code !== esperado) {
+                area.innerHTML = '<p class="text-red-700 bg-red-50 p-4 rounded border border-red-200 text-sm">Código incorrecto. Revísalo con tu docente.</p>';
+                return;
+            }
+            let yaVisto = !!(vistas[k] && vistas[k].visto);
+            if (db) {
+                try { const snap = await db.ref(VIEWS_NODE + '/' + k).once('value'); const v = snap.val(); yaVisto = !!(v && v.visto); }
+                catch (e) { console.error('Error leyendo la vista:', e); }
+            }
+            if (yaVisto) {
+                area.innerHTML = '<p class="text-amber-800 bg-amber-50 p-4 rounded border border-amber-200 text-sm">Tu informe ya fue revisado. Si tuviste un problema técnico, pídele al docente que lo habilite.</p>';
+                return;
+            }
+            const msgFallo = '<p class="text-red-700 bg-red-50 p-4 rounded border border-red-200 text-sm">No se pudo registrar tu vista. Revisa tu conexión e inténtalo de nuevo; si el problema continúa, avísale al docente.</p>';
+            if (db) {
+                try {
+                    await db.ref(VIEWS_NODE + '/' + k).set({ visto: true, ts: Date.now() });
+                    vistas[k] = { visto: true, ts: Date.now() };
+                    consultaUnlockedStudent = student;
+                    renderConsulta();
+                    renderCodigosPanel();
+                } catch (e) {
+                    console.error('Error marcando la vista:', e);
+                    area.innerHTML = msgFallo;
+                }
+            } else {
+                area.innerHTML = msgFallo;
+            }
+        }
+
+        // --- DESCARGA / IMPRESIÓN DEL INFORME DEL ALUMNO ---
+        function _normSlug(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_+|_+$/g, ''); }
+        function _nombreArchivo(r, ext) { return 'Informe_ADA3_' + (_normSlug(r.student) || 'alumno') + '.' + ext; }
+        function _fmtDesc(d) { return d === null ? 'Pendiente' : (d === 0 ? 'Sin descuento' : '-' + d + (d === 1 ? ' punto' : ' puntos')); }
+
+        function informeFilas(r) {
+            return [
+                ['Grupo', r.grupo],
+                ['B. Terminología (grupal, máx 2)', r.B !== null ? r.B : 'Pendiente'],
+                ['C. Aplicación y análisis (grupal, máx 3)', r.C !== null ? r.C : 'Pendiente'],
+                ['D. Concepto clave (individual, máx 3)', r.D !== null ? r.D : 'Pendiente'],
+                ['E. Evaluación (individual, máx 3)', r.E !== null ? r.E : 'Pendiente'],
+                ['Llamados por lectura', r.L !== null ? r.L : 'Pendiente'],
+                ['Descuento por lectura', _fmtDesc(r.desc)],
+                ['Nota de la ADA', r.nADA !== null ? r.nADA.toFixed(1) + ' / 10' : 'Pendiente'],
+                ['Nota de coevaluación (' + r.nCoev + (r.nCoev === 1 ? ' evaluación' : ' evaluaciones') + ')', r.coev !== null ? r.coev.toFixed(1) + ' / 10' : 'Pendiente'],
+                ['Nota final', r.nFinal !== null ? r.nFinal.toFixed(1) + ' / 10' : 'Pendiente']
+            ];
+        }
+
+        function informeImprimibleInner(r) {
+            const rows = informeFilas(r).map(p => '<tr><td class="lbl">' + p[0] + '</td><td class="val">' + p[1] + '</td></tr>').join('');
+            return '<h2>Informe de coevaluación - ADA 3</h2>' +
+                '<p class="sub">Provisión directa de servicios - Economía IB Nivel Medio, 2 BGU</p>' +
+                '<p class="stu"><b>Estudiante:</b> ' + r.student + '</p>' +
+                '<table>' + rows + '</table>' +
+                '<h3>Retroalimentación</h3>' +
+                '<p class="fb">' + r.fb + '</p>' +
+                '<p class="pie">Prof. Alberto Ottati R. - Logos Academy</p>';
+        }
+
+        function informeImprimibleHTML(r) {
+            return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">' +
+                '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+                '<title>Informe ADA 3 - ' + r.student + '</title>' +
+                '<style>' +
+                'body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; color: #1f2937; margin: 32px; }' +
+                'h2 { font-size: 20px; color: #1e3a8a; margin-bottom: 2px; }' +
+                '.sub { color: #4b5563; font-size: 13px; margin-bottom: 16px; }' +
+                '.stu { font-size: 16px; margin-bottom: 12px; }' +
+                'table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }' +
+                'td { border: 1px solid #d1d5db; padding: 6px 8px; }' +
+                'td.val { font-weight: bold; text-align: right; }' +
+                'h3 { font-size: 15px; color: #1e3a8a; margin: 12px 0 6px; }' +
+                '.fb { font-size: 13px; line-height: 1.5; }' +
+                '.pie { margin-top: 24px; font-size: 11px; color: #6b7280; }' +
+                '</style></head><body>' + informeImprimibleInner(r) + '</body></html>';
+        }
+
+        function informeTextoPlano(r) {
+            const L = [];
+            L.push('INFORME DE COEVALUACIÓN - ADA 3 "Provisión directa de servicios"');
+            L.push('Economía IB Nivel Medio, 2 BGU');
+            L.push('Estudiante: ' + r.student);
+            L.push('');
+            informeFilas(r).forEach(p => { L.push(p[0] + ': ' + p[1]); });
+            L.push('');
+            L.push('Retroalimentación:');
+            L.push(r.fb);
+            L.push('');
+            L.push('Prof. Alberto Ottati R. - Logos Academy');
+            return L.join('\n');
+        }
+
+        function generarPDF(r, jsPDFCtor) {
+            const doc = new jsPDFCtor({ unit: 'mm', format: 'a4' });
+            const M = 15; let y = 20;
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
+            doc.setTextColor(30, 58, 138);
+            doc.text('Informe de coevaluación - ADA 3', M, y); y += 8;
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(75, 85, 99);
+            doc.text('Provisión directa de servicios - Economía IB Nivel Medio, 2 BGU', M, y); y += 11;
+            doc.setTextColor(17, 24, 39); doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
+            doc.text('Estudiante: ' + r.student, M, y); y += 8;
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
+            informeFilas(r).forEach(p => {
+                if (y > 275) { doc.addPage(); y = 20; }
+                doc.text(String(p[0]), M, y);
+                doc.text(String(p[1]), 120, y);
+                y += 7;
+            });
+            y += 3;
+            if (y > 260) { doc.addPage(); y = 20; }
+            doc.setFont('helvetica', 'bold'); doc.setTextColor(30, 58, 138);
+            doc.text('Retroalimentación', M, y); y += 7;
+            doc.setFont('helvetica', 'normal'); doc.setTextColor(55, 65, 81);
+            doc.splitTextToSize(r.fb, 180).forEach(line => {
+                if (y > 280) { doc.addPage(); y = 20; }
+                doc.text(line, M, y); y += 6;
+            });
+            doc.save(_nombreArchivo(r, 'pdf'));
+        }
+
+        function mostrarOverlayInforme(r) {
+            cerrarInformeOverlay();
+            const o = document.createElement('div');
+            o.id = 'informeOverlay';
+            o.className = 'informe-overlay';
+            o.innerHTML = '<div class="informe-toolbar">' +
+                '<button onclick="imprimirInforme()" class="bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-bold">Imprimir (Cmd+P / Ctrl+P)</button>' +
+                '<button onclick="descargarInformeHTML()" class="bg-gray-700 text-white px-3 py-1.5 rounded text-sm">Descargar HTML</button>' +
+                '<button onclick="descargarInformeTXT()" class="bg-gray-700 text-white px-3 py-1.5 rounded text-sm">Descargar TXT</button>' +
+                '<button onclick="cerrarInformeOverlay()" class="bg-red-500 text-white px-3 py-1.5 rounded text-sm">Cerrar</button>' +
+                '</div>' +
+                '<div class="informe-print">' + informeImprimibleInner(r) + '</div>';
+            document.body.appendChild(o);
+        }
+        function cerrarInformeOverlay() { const o = document.getElementById('informeOverlay'); if (o) o.remove(); }
+        function imprimirInforme() {
+            try { window.print(); }
+            catch (e) { showToast('No se pudo abrir el diálogo de impresión. Usa Cmd+P o Ctrl+P, o descarga el informe.'); }
+        }
+        function descargarInformeHTML() {
+            if (!informeActual) return;
+            _download(new Blob([informeImprimibleHTML(informeActual)], { type: 'text/html;charset=utf-8;' }), _nombreArchivo(informeActual, 'html'));
+            showToast('Informe HTML descargado.');
+        }
+        function descargarInformeTXT() {
+            if (!informeActual) return;
+            _download(new Blob([informeTextoPlano(informeActual)], { type: 'text/plain;charset=utf-8;' }), _nombreArchivo(informeActual, 'txt'));
+            showToast('Informe TXT descargado.');
+        }
+
+        function descargarInforme() {
+            if (!consultaUnlockedStudent) { showToast('Primero abre tu informe.'); return; }
+            const r = buildReport(consultaUnlockedStudent);
+            informeActual = r;
+            const jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || null);
+            if (jsPDFCtor) {
+                try { generarPDF(r, jsPDFCtor); showToast('Informe PDF descargado.'); return; }
+                catch (e) { console.error('Error generando PDF:', e); }
+            }
+            mostrarOverlayInforme(r);
+            showToast('No se pudo cargar el generador de PDF. Se abrió una versión imprimible: usa Cmd+P o Ctrl+P, o descarga el informe.');
         }
 
 </script>
