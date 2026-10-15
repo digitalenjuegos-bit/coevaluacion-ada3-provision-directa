@@ -68,7 +68,7 @@
             <div class="prose max-w-none">
                 <h2 class="text-2xl font-semibold text-blue-800">PROVISIÓN DIRECTA DE SERVICIOS</h2>
                 <p class="italic text-gray-600">¿Qué gana y qué pierde cada parte interesada cuando el Estado produce directamente un bien de mérito o un bien público?</p>
-                <p>En esta ADA estudiaste las formas de intervención del gobierno en los mercados. La <b>provisión directa</b> es la intervención en la que el Estado produce o entrega el bien o servicio, en lugar de dejar que lo haga el sector privado. Trabajaron en cuatro casos: la salud pública y la educación pública como bienes de mérito, los bienes públicos puros y el problema del polizón, y los servicios públicos que no son gratuitos para el usuario.</p>
+                <p>En esta ADA estudiaste las formas de intervención del gobierno en los mercados. La <b>provisión directa</b> es la intervención en la que el Estado produce o entrega el bien o servicio, en lugar de dejar que lo haga el sector privado. Trabajaron en cinco casos: la salud pública y la educación pública como bienes de mérito, los bienes públicos puros y el problema del polizón, los servicios públicos que no son gratuitos para el usuario, y la edad mínima y las prohibiciones de consumo.</p>
                 <p>Ahora, como cierre, cada equipo presenta su <b>infografía y exposición</b> y tú participas como <b>coevaluador</b>: valorarás el trabajo de los demás equipos con la rúbrica de esta actividad, dentro de un marco de respeto, objetividad, equilibrio, escucha activa y ética. La coevaluación no es crítica destructiva: es una oportunidad para brindar retroalimentación constructiva a tus compañeros.</p>
 
                 <div class="bg-blue-50 p-4 rounded-md border border-blue-200 mt-4">
@@ -158,7 +158,7 @@
                 <!-- MODULO 1: RÚBRICA DOCENTE -->
                 <div class="mb-6 p-4 bg-white rounded border">
                     <h4 class="font-semibold mb-1">4. Evaluación Docente (rúbrica oficial de la ADA 3)</h4>
-                    <p class="text-xs text-gray-500 mb-3">Bloque grupal: B Terminología (máx 2) y C Aplicación y análisis (máx 3), igual para los 4 integrantes. Bloque individual: D Concepto clave (máx 3), E Evaluación (máx 3) y llamados de atención por lectura. Nota ADA = (B + C + D + E) / 11 x 10 menos el descuento por lectura; nunca menor que 0.</p>
+                    <p class="text-xs text-gray-500 mb-3">Bloque grupal: B Terminología (máx 2) y C Aplicación y análisis (máx 3), igual para todos los integrantes del grupo. Bloque individual: D Concepto clave (máx 3), E Evaluación (máx 3) y llamados de atención por lectura. Nota ADA = (B + C + D + E) / 11 x 10 menos el descuento por lectura; nunca menor que 0.</p>
                     <div id="docenteRubricaArea" class="text-sm"></div>
                 </div>
 
@@ -364,10 +364,10 @@
         // --- GRUPOS (hardcoded; un solo curso 2BGU) ---
         const GROUPS = [
             { id: 'G1', topic: 'Bienes de mérito: la salud pública', members: ['Alejandro Granda', 'Vicente Chalen', 'Martin Murillo', 'Emmanuel Molano'] },
-            { id: 'G2', topic: 'Bienes de mérito: la educación pública', members: ['Juan Martin Romero', 'Ivanna Guerrero', 'Camila Aspiazu', 'Sebastian Ortiz'] },
+            { id: 'G2', topic: 'Bienes de mérito: la educación pública', members: ['Juan Martin Romero', 'Ivanna Guerrero', 'Camila Aspiazu', 'Sebastian Ortiz', 'Valeska Pabon'] },
             { id: 'G3', topic: 'Bienes públicos puros y el problema del polizón', members: ['JuanJose Campuzano', 'Gianella Alban', 'Mateo De La Cruz', 'Domenica Tamayo'] },
             { id: 'G4', topic: 'Servicios públicos que no son gratuitos', members: ['Jacinto Flor', 'Adrian Mendiburo', 'Valeria Vizhnay', 'Mathias Martinez'] },
-            { id: 'G5', topic: '', members: ['Alejandra Stark', 'Julio Vizcaino', 'Ernesto Sierra', 'Julian Baron'] }
+            { id: 'G5', topic: 'Edad mínima y prohibiciones de consumo', members: ['Alejandra Stark', 'Julio Vizcaino', 'Ernesto Sierra', 'Julian Baron'] }
         ];
         const ROSTER = GROUPS.reduce((acc, g) => acc.concat(g.members), []);
         const DEFAULT_TEAMS = JSON.parse(JSON.stringify(GROUPS));
