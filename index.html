@@ -101,7 +101,7 @@
             <!-- PANEL DOCENTE -->
             <div id="teacher-panel" class="hidden mt-8 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
                 <h3 class="text-xl font-bold text-blue-900 mb-4">Panel de Administración Docente</h3>
-                <p class="text-sm text-gray-600 mb-4">Curso único 2BGU, cuatro grupos. Nota final = <b id="pesoHeader">70% rúbrica docente / 30% coevaluación</b>.</p>
+                <p class="text-sm text-gray-600 mb-4">Curso único 2BGU, cinco grupos. Nota final = <b id="pesoHeader">70% rúbrica docente / 30% coevaluación</b>.</p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div class="p-4 bg-white rounded border">
@@ -366,7 +366,8 @@
             { id: 'G1', topic: 'Bienes de mérito: la salud pública', members: ['Alejandro Granda', 'Vicente Chalen', 'Martin Murillo', 'Emmanuel Molano'] },
             { id: 'G2', topic: 'Bienes de mérito: la educación pública', members: ['Juan Martin Romero', 'Ivanna Guerrero', 'Camila Aspiazu', 'Sebastian Ortiz'] },
             { id: 'G3', topic: 'Bienes públicos puros y el problema del polizón', members: ['JuanJose Campuzano', 'Gianella Alban', 'Mateo De La Cruz', 'Domenica Tamayo'] },
-            { id: 'G4', topic: 'Servicios públicos que no son gratuitos', members: ['Jacinto Flor', 'Adrian Mendiburo', 'Valeria Vizhnay', 'Mathias Martinez'] }
+            { id: 'G4', topic: 'Servicios públicos que no son gratuitos', members: ['Jacinto Flor', 'Adrian Mendiburo', 'Valeria Vizhnay', 'Mathias Martinez'] },
+            { id: 'G5', topic: '', members: ['Alejandra Stark', 'Julio Vizcaino', 'Ernesto Sierra', 'Julian Baron'] }
         ];
         const ROSTER = GROUPS.reduce((acc, g) => acc.concat(g.members), []);
         const DEFAULT_TEAMS = JSON.parse(JSON.stringify(GROUPS));
@@ -771,7 +772,7 @@
             }).join('');
 
             evalArea.innerHTML = '<div class="bg-gray-50 p-4 rounded-lg border">' +
-                '<div class="mb-3 border-b pb-2"><h3 class="font-bold text-blue-900 text-lg">' + groupLabel(team.id) + ': ' + team.topic + '</h3>' +
+                '<div class="mb-3 border-b pb-2"><h3 class="font-bold text-blue-900 text-lg">' + groupLabel(team.id) + (team.topic ? ': ' + team.topic : '') + '</h3>' +
                 '<p class="text-xs text-gray-500">Califica a <b>cada integrante de forma individual</b>. La nota de cada uno es la suma de los 4 criterios sobre 12, convertida a 10.</p></div>' +
                 membersHtml + '</div>';
             backBox.classList.remove('hidden');
@@ -979,7 +980,7 @@
             let html = '<div class="mb-3 flex flex-wrap items-center gap-3">' +
                 '<label class="text-sm font-semibold">Grupo a evaluar:</label>' +
                 '<select id="docGrupoSelect" onchange="docGrupoCambio()" class="border rounded px-2 py-1 text-sm">' +
-                teams.map(x => '<option value="' + x.id + '"' + (x.id === gid ? ' selected' : '') + '>' + groupLabel(x.id) + ' - ' + (x.topic || '') + '</option>').join('') +
+                teams.map(x => '<option value="' + x.id + '"' + (x.id === gid ? ' selected' : '') + '>' + groupLabel(x.id) + (x.topic ? ' - ' + x.topic : '') + '</option>').join('') +
                 '</select></div>';
 
             html += '<div class="p-3 bg-gray-50 rounded border mb-3">' +
@@ -1032,17 +1033,21 @@
             const g = teams.find(x => x.id === gid);
             if (!t || !g) return;
             if (typeof t.B !== 'number' || typeof t.C !== 'number') { showToast('Falta calificar B y C (bloque grupal).'); return; }
+            // Se guarda integrante por integrante: si alguien faltó o quedó incompleto,
+            // no bloquea el guardado de los demás integrantes del grupo.
+            const completos = [];
             const faltan = [];
             g.members.forEach(m => {
                 const mm = t.members[safeKey(m)] || {};
-                if (typeof mm.D !== 'number' || typeof mm.E !== 'number' || typeof mm.llamados !== 'number') faltan.push(shortName(m));
+                if (typeof mm.D === 'number' && typeof mm.E === 'number' && typeof mm.llamados === 'number') completos.push(m);
+                else faltan.push(shortName(m));
             });
-            if (faltan.length > 0) { showToast('Faltan D, E o llamados en: ' + faltan.join(', ') + '.'); return; }
+            if (completos.length === 0) { showToast('Ningún integrante del ' + groupLabel(gid) + ' tiene D, E y llamados completos. Nada que guardar todavía.'); return; }
             const st = document.getElementById('docSaveStatus');
             try {
                 if (st) st.textContent = 'Guardando...';
                 const updates = {};
-                g.members.forEach(m => {
+                completos.forEach(m => {
                     const k = safeKey(m);
                     const mm = t.members[k];
                     updates[k] = {
@@ -1053,8 +1058,13 @@
                     };
                 });
                 await db.ref(DOCENTE_NODE).update(updates);
-                if (st) st.textContent = 'Guardado ' + new Date().toLocaleTimeString('es-EC');
-                showToast('Evaluación del ' + groupLabel(gid) + ' guardada.');
+                const resumen = 'Guardado ' + new Date().toLocaleTimeString('es-EC') + ' (' + completos.length + ' de ' + g.members.length + ' integrantes)';
+                if (st) st.textContent = resumen;
+                if (faltan.length > 0) {
+                    showToast('Guardado ' + groupLabel(gid) + ': ' + completos.length + ' de ' + g.members.length + '. Quedan sin guardar (faltan D, E o llamados): ' + faltan.join(', ') + '.');
+                } else {
+                    showToast('Evaluación del ' + groupLabel(gid) + ' guardada completa.');
+                }
             } catch (e) { if (st) st.textContent = 'Error: ' + e.message; }
         }
 
